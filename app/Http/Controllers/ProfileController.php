@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @OA\Tag(
@@ -54,11 +55,11 @@ class ProfileController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+           // 'user_id' => 'required|exists:users,id',
             'bio' => 'required|string',
         ]);
 
-        $profile = Profile::create($validated);
+        $profile = Auth::user()->profile()->create($validated);
 
         return response()->json($profile, 201);
     }

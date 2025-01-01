@@ -38,9 +38,9 @@ class SupplierController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "contact_email"},
+     *             required={"name", "contact_person"},
      *             @OA\Property(property="name", type="string", example="Supplier Name"),
-     *             @OA\Property(property="contact_email", type="string", example="supplier@example.com")
+     *             @OA\Property(property="contact_person", type="string", example="supplier@example.com")
      *         )
      *     ),
      *     @OA\Response(
@@ -54,7 +54,7 @@ class SupplierController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'contact_email' => 'required|email|unique:suppliers,contact_email',
+            'contact_person' => 'required|email|unique:suppliers,contact_person',
         ]);
 
         $supplier = Supplier::create($validated);
@@ -103,7 +103,7 @@ class SupplierController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="name", type="string", example="Updated Supplier Name"),
-     *             @OA\Property(property="contact_email", type="string", example="updated@example.com")
+     *             @OA\Property(property="contact_person", type="string", example="updated@example.com")
      *         )
      *     ),
      *     @OA\Response(
@@ -119,7 +119,7 @@ class SupplierController extends Controller
 
         $validated = $request->validate([
             'name' => 'string|max:255',
-            'contact_email' => 'email|unique:suppliers,contact_email,' . $id,
+            'contact_person' => 'email|unique:suppliers,contact_person,' . $id,
         ]);
 
         $supplier->update($validated);

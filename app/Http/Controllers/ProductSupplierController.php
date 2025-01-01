@@ -66,6 +66,7 @@ class ProductSupplierController extends Controller
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'supplier_id' => 'required|exists:suppliers,id',
+            'cost_price' => 'required|numeric',
         ]);
 
         $productSupplier = ProductSupplier::create($validated);
@@ -142,6 +143,7 @@ class ProductSupplierController extends Controller
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'supplier_id' => 'required|exists:suppliers,id',
+            'cost_price' => 'required|numeric',
         ]);
 
         $productSupplier = ProductSupplier::find($id);

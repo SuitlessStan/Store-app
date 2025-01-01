@@ -29,16 +29,16 @@ use App\Http\Controllers\Auth\VerifyEmailController;
  */
 
 // Authentication Routes
-Route::middleware('api')->group(function () {
+//Route::middleware('api')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::delete('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
     Route::post('/register', [RegisteredUserController::class, 'store']);
     Route::post('/password/email', [PasswordResetLinkController::class, 'store']);
     Route::post('/password/reset', [NewPasswordController::class, 'store']);
 
     Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])->middleware(['signed'])->name('verification.verify');
     Route::post('/email/resend', [EmailVerificationNotificationController::class, 'store'])->middleware('auth:sanctum');
-});
+//});
 
 Route::middleware(['auth:sanctum'])->group(function () {
     // Customers
@@ -66,7 +66,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      *     description="API Endpoints for Order Details"
      * )
      */
-    Route::apiResource('order-details', OrderDetailController::class);
+    Route::apiResource('order.order-details', OrderDetailController::class);
 
     // Products
     /**

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Password;
  *     description="API Endpoints for requesting password reset links"
  * )
  */
-class PasswordResetLinkController extends Controller
+class   PasswordResetLinkController extends Controller
 {
     /**
      * @OA\Post(

@@ -58,9 +58,9 @@ class CustomerController extends Controller
             'phone' => 'required|string',
             'address' => 'required|string',
         ]);
-
+//$validated['user_id'] = Auth::id();
         $customer = Customer::create($validated);
-
+        // $customer = Customer::create([...$validated , 'user_id' => Auth::id()]);
         return response()->json($customer, 201);
     }
 

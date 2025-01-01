@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 
@@ -25,9 +26,9 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(Order $order)
     {
-        return response()->json(OrderDetail::all(), 200);
+        return response()->json(['order_detials' => $order->orderDetails], 200);
     }
 
     /**
@@ -52,17 +53,17 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(Request $request,Order $order)
     {
         $validated = $request->validate([
-            'order_id' => 'required|exists:orders,id',
+           // 'order_id' => 'required|exists:orders,id',
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0',
         ]);
 
-        $orderDetail = OrderDetail::create($validated);
-
+       // $orderDetail = OrderDetail::create($validated);
+        $orderDetail = $order->orderDetails()->create($validated);
         return response()->json($orderDetail, 201);
     }
 
@@ -85,9 +86,9 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function show($id)
+    public function show(Order $order,$id)
     {
-        $orderDetail = OrderDetail::find($id);
+        $orderDetail = $order->orderDetails()->find($id);
 
         if (!$orderDetail) {
             return response()->json(['message' => 'Order detail not found'], 404);
@@ -122,9 +123,9 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,Order $order, $id)
     {
-        $orderDetail = OrderDetail::find($id);
+        $orderDetail = $order->orderDetails()->find($id);
 
         if (!$orderDetail) {
             return response()->json(['message' => 'Order detail not found'], 404);
@@ -132,7 +133,7 @@ class OrderDetailController extends Controller
 
         $validated = $request->validate([
             'quantity' => 'sometimes|required|integer|min:1',
-            'unit_price' => 'sometimes|required|numeric|min:0',
+            'price' => 'sometimes|required|numeric|min:0',
         ]);
 
         $orderDetail->update($validated);
@@ -158,9 +159,9 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function destroy($id)
+    public function destroy(Order $order,$id)
     {
-        $orderDetail = OrderDetail::find($id);
+        $orderDetail = $order->orderDetails()->find($id);
 
         if (!$orderDetail) {
             return response()->json(['message' => 'OrderDetail not found'], 404);

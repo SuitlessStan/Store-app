@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @OA\Schema(
@@ -23,6 +24,12 @@ class Customer extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'name', 'phone', 'address'];
+
+    protected static function booted() {
+        static::creating(function(Customer $customer){
+            $customer->user_id = Auth::guard('sanctum')->id();
+        });
+    }
 
     public function user()
     {
