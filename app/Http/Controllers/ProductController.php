@@ -31,6 +31,11 @@ class ProductController extends Controller
         return response()->json(Product::all(), 200);
     }
 
+    public function create()
+    {
+        return view('admin.products.create');
+    }
+
     /**
      * @OA\Post(
      *     path="/api/products",
@@ -38,15 +43,12 @@ class ProductController extends Controller
      *     summary="Create a new product",
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 required={"name", "description", "price", "product_image"},
-     *                 @OA\Property(property="name", type="string", example="Sample Product"),
-     *                 @OA\Property(property="description", type="string", example="Product description here"),
-     *                 @OA\Property(property="price", type="number", format="float", example=99.99),
-     *                 @OA\Property(property="product_image", type="string", format="binary")
-     *             )
+     *         @OA\JsonContent(
+     *             required={"name", "description", "price", "product_image"},
+     *             @OA\Property(property="name", type="string", example="Sample Product"),
+     *             @OA\Property(property="description", type="string", example="Product description here"),
+     *             @OA\Property(property="price", type="number", format="float", example=99.99),
+     *             @OA\Property(property="product_image", type="string", format="binary")
      *         )
      *     ),
      *     @OA\Response(
@@ -59,22 +61,20 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'category' => 'required|string|max:255',
-            'brand' => 'nullable|string|max:255',
-            'stock_quantity' => 'required|integer',
-            'product_image' => 'required|image|mimes:jpg,png,jpeg|max:2048', // New validation rule
+            'price' => 'required|numeric',
+            'product_image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
         ]);
 
-        // Store Image
-        $imagePath = $request->file('product_image')->store('products', 'public');
-        $validated['product_image'] = $imagePath;
+        // Handle file upload
+        if ($request->hasFile('product_image')) {
+            $validated['product_image'] = $request->file('product_image')->store('images/products', 'public');
+        }
 
-        $product = Product::create($validated);
+        Product::create($validated);
 
-        return response()->json($product, 201);
+        return redirect()->route('admin.dashboard')->with('success', 'Product added successfully!');
     }
 
     /**

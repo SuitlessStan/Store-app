@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -16,6 +15,14 @@ use Illuminate\Validation\ValidationException;
  */
 class AuthenticatedSessionController extends Controller
 {
+    /**
+     * Show the login form (Web-based).
+     */
+    public function create()
+    {
+        return view('auth.login');
+    }
+
     /**
      * @OA\Post(
      *     path="/api/login",
@@ -35,6 +42,26 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(Request $request)
     {
+        // For Web Authentication
+        if ($request->expectsJson() === false) {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+
+                // Redirect to admin dashboard if admin, else normal dashboard
+                return redirect()->intended(auth()->user()->is_admin ? '/admin/dashboard' : '/dashboard');
+            }
+
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        // For API Authentication
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -55,6 +82,19 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Log out the authenticated user (Web-based).
+     */
+    public function destroy(Request $request)
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
+    }
+
+    /**
      * @OA\Post(
      *     path="/api/logout",
      *     summary="Log out the authenticated user",
@@ -63,7 +103,7 @@ class AuthenticatedSessionController extends Controller
      *     security={{"bearerAuth": {}}}
      * )
      */
-    public function destroy(Request $request)
+    public function apiDestroy(Request $request)
     {
         $request->user()->tokens()->delete();
 

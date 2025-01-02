@@ -8,6 +8,7 @@ This is a basic Laravel application for a store. It handles user authentication 
 
 - User Authentication (Register, Login, Password Reset)
 - Authorization with Roles and Permissions
+- Admin Dashboard for managing products
 - Basic Database Migrations (Users, Cache, and Jobs tables)
 - Built using Laravel, Tailwind CSS, and Vite for modern development
 - Dockerized environment for simplified setup and deployment
@@ -128,152 +129,39 @@ Open the browser and visit:
 http://localhost:8000/api/documentation
 ```
 
----
+### 3. Using Postman for API Testing
 
-## Using the API with Postman
-
-### 1. Register a New User
-**Endpoint**:  
+1. Set the **base URL**:
 ```
-POST /api/register
+http://localhost:8000/api
 ```
 
-**Headers**:
-```
-Content-Type: application/json
-```
+2. Authentication:
+   - Register a new user at:
+     `POST /register`
+   - Login to get a token:
+     `POST /login`
+   - Use the **Authorization: Bearer <token>** header in subsequent requests.
 
-**Body**:
-```json
-{
-  "name": "John Doe",
-  "email": "johndoe@example.com",
-  "password": "password123",
-  "password_confirmation": "password123"
-}
-```
-
-**Response**:
-```json
-{
-  "data": {
-    "user": {
-      "id": 1,
-      "name": "John Doe",
-      "email": "johndoe@example.com"
-    },
-    "token": "your-access-token-here"
-  }
-}
-```
+3. Example Endpoints:
+   - **Customers**
+     - `GET /customers` - Fetch all customers.
+     - `POST /customers` - Create a new customer.
+   - **Orders**
+     - `GET /orders` - Fetch all orders.
+     - `POST /orders` - Create a new order.
+   - **Products**
+     - `GET /products` - Fetch all products.
+     - `POST /products` - Create a new product.
 
 ---
 
-### 2. Login to Get Token
-**Endpoint**:  
-```
-POST /api/login
-```
+## Admin Dashboard
 
-**Headers**:
-```
-Content-Type: application/json
-```
-
-**Body**:
-```json
-{
-  "email": "johndoe@example.com",
-  "password": "password123"
-}
-```
-
-**Response**:
-```json
-{
-  "token": "your-access-token-here",
-  "token_type": "Bearer",
-  "expires_in": 3600
-}
-```
-
----
-
-### 3. Use Token for Authorization
-For all subsequent requests, add the following header:
-```
-Authorization: Bearer your-access-token-here
-```
-
----
-
-### 4. Example - Create a Customer
-**Endpoint**:  
-```
-POST /api/customers
-```
-
-**Headers**:
-```
-Authorization: Bearer your-access-token-here
-Content-Type: application/json
-```
-
-**Body**:
-```json
-{
-  "name": "Alice Smith",
-  "email": "alice.smith@example.com",
-  "phone": "1234567890"
-}
-```
-
-**Response**:
-```json
-{
-  "data": {
-    "id": 1,
-    "name": "Alice Smith",
-    "email": "alice.smith@example.com",
-    "phone": "1234567890",
-    "created_at": "2024-12-31",
-    "updated_at": "2024-12-31"
-  }
-}
-```
-
----
-
-### 5. Other API Endpoints
-- **List Customers**:
-  ```
-  GET /api/customers
-  ```
-- **Create a Product**:
-  ```
-  POST /api/products
-  ```
-  Body:
-  ```json
-  {
-    "name": "Laptop",
-    "description": "Gaming laptop",
-    "price": 1200.00
-  }
-  ```
-- **Create an Order**:
-  ```
-  POST /api/orders
-  ```
-  Body:
-  ```json
-  {
-    "customer_id": 1,
-    "order_date": "2024-12-31",
-    "status": "pending",
-    "total": 1200.00
-  }
-  ```
+1. Visit: `http://localhost:9000/admin`
+2. Sign in with admin credentials.
+3. Add new products by filling in the required details including name, description, price, stock quantity, category, brand, and product image.
+4. Manage existing products, edit details, or delete products as needed.
 
 ---
 

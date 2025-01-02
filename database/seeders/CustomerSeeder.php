@@ -10,8 +10,18 @@ class CustomerSeeder extends Seeder
     public function run(): void
     {
         Customer::insert([
-            ['user_id' => 1, 'name' => 'Alice Johnson', 'phone' => '1234567890', 'address' => '123 Main St', 'created_at' => now(), 'updated_at' => now()],
-            ['user_id' => 2, 'name' => 'Bob Brown', 'phone' => '0987654321', 'address' => '456 Elm St', 'created_at' => now(), 'updated_at' => now()],
+            [
+                'name' => 'Alice Johnson',
+                'address' => '123 Main St',
+                'phone' => '1234567890',
+                'user_id' => 1, 
+            ],
+            [
+                'name' => 'Bob Brown',
+                'address' => '456 Elm St',
+                'phone' => '0987654321',
+                'user_id' => 2, 
+            ],
         ]);
     }
 }
