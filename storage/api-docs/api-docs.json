@@ -395,6 +395,162 @@
                 ]
             }
         },
+        "/api/cart": {
+            "get": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Get the cart items for the authenticated user",
+                "operationId": "0652f94dde92e36bbb3c461356ce1d7b",
+                "responses": {
+                    "200": {
+                        "description": "Cart retrieved successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Add product to cart",
+                "operationId": "b432c7bbb8b06ea2019c3d37f23258ca",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product added to cart"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/cart/{id}": {
+            "put": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Update cart item quantity",
+                "operationId": "ce6d8910efe0dda5a56c85b4383c4010",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cart updated successfully"
+                    },
+                    "404": {
+                        "description": "Cart item not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Remove product from cart",
+                "operationId": "5fc80ceb0ebae6f9fed7fc27e0f93592",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Cart item removed successfully"
+                    },
+                    "404": {
+                        "description": "Cart item not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/customers": {
             "get": {
                 "tags": [
@@ -566,6 +722,105 @@
                         "description": "Customer deleted successfully"
                     }
                 }
+            }
+        },
+        "/api/favorites": {
+            "get": {
+                "tags": [
+                    "Favorites"
+                ],
+                "summary": "Get list of favorite products for authenticated user",
+                "operationId": "d0d405a490978063e03bab284ca93c18",
+                "responses": {
+                    "200": {
+                        "description": "List of favorites retrieved successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Favorites"
+                ],
+                "summary": "Add product to favorites",
+                "operationId": "38ecd9fddd24c32aa0704ad440f5cf9d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product added to favorites"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/favorites/{id}": {
+            "delete": {
+                "tags": [
+                    "Favorites"
+                ],
+                "summary": "Remove product from favorites",
+                "operationId": "a6e07b1e30bbbac318a9cb4dfc74bdf4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Favorite removed successfully"
+                    },
+                    "404": {
+                        "description": "Favorite not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/orders": {
@@ -1497,14 +1752,14 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "contact_email"
+                                    "contact_person"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
                                         "example": "Supplier Name"
                                     },
-                                    "contact_email": {
+                                    "contact_person": {
                                         "type": "string",
                                         "example": "supplier@example.com"
                                     }
@@ -1586,7 +1841,7 @@
                                         "type": "string",
                                         "example": "Updated Supplier Name"
                                     },
-                                    "contact_email": {
+                                    "contact_person": {
                                         "type": "string",
                                         "example": "updated@example.com"
                                     }
@@ -2133,8 +2388,16 @@
             "description": "API Endpoints for user registration"
         },
         {
+            "name": "Cart",
+            "description": "API Endpoints for managing shopping cart"
+        },
+        {
             "name": "Customers",
             "description": "API Endpoints for customer management"
+        },
+        {
+            "name": "Favorites",
+            "description": "API Endpoints for managing product favorites"
         },
         {
             "name": "Orders",
