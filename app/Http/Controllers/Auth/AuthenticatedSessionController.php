@@ -26,7 +26,8 @@ class AuthenticatedSessionController extends Controller
     /**
      * @OA\Post(
      *     path="/api/login",
-     *     summary="Authenticate user and return API token",
+     *     summary="Authenticate user for both Web and API access",
+     *     description="Handles web-based login with redirects and API-based login that returns a token.",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
      *         required=true,
@@ -36,8 +37,15 @@ class AuthenticatedSessionController extends Controller
      *             @OA\Property(property="password", type="string", example="password123")
      *         )
      *     ),
-     *     @OA\Response(response=200, description="Login successful, returns token"),
-     *     @OA\Response(response=401, description="Invalid credentials")
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful - Web users are redirected, API users receive a token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="abc123tokenvalue")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Invalid credentials"),
+     *     @OA\Response(response=422, description="Validation error")
      * )
      */
     public function store(Request $request)
@@ -83,6 +91,8 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Log out the authenticated user (Web-based).
+     *
+     * Note: This method is for web logout only and does not affect API tokens.
      */
     public function destroy(Request $request)
     {
@@ -97,9 +107,17 @@ class AuthenticatedSessionController extends Controller
     /**
      * @OA\Post(
      *     path="/api/logout",
-     *     summary="Log out the authenticated user",
+     *     summary="Log out the authenticated API user",
+     *     description="Invalidates all tokens for the currently authenticated user.",
      *     tags={"Authentication"},
-     *     @OA\Response(response=200, description="Logged out successfully"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logged out successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logged out successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized - Invalid or expired token"),
      *     security={{"bearerAuth": {}}}
      * )
      */

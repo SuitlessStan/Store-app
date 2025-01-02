@@ -1,198 +1,170 @@
 # Store App
 
-This is a basic Laravel application for a store. It handles user authentication and authorization, includes essential database migrations, and provides the necessary setup instructions for local development.
+This is a Laravel 11 application designed for managing products, customers, orders, and suppliers. It supports user authentication, authorization, and a dedicated admin dashboard for managing the store.
 
 ---
 
 ## Features
 
-- User Authentication (Register, Login, Password Reset)
-- Authorization with Roles and Permissions
-- Admin Dashboard for managing products
-- Basic Database Migrations (Users, Cache, and Jobs tables)
-- Built using Laravel, Tailwind CSS, and Vite for modern development
-- Dockerized environment for simplified setup and deployment
-- API with Swagger documentation available at `/api/documentation`
+- **User Authentication** - Register, Login, and Logout using Laravel Sanctum.
+- **Admin Dashboard** - Allows admins to view statistics and manage products.
+- **Products Management** - Create, edit, delete, and view products.
+- **Favorites and Cart** - Users can add products to favorites and carts, which are linked to products.
+- **Swagger API Documentation** - Auto-generated API documentation available.
+- **Image Upload** - Products support image uploads.
+- **Role-Based Access Control** - Admin-only access to dashboards and product management.
+- **Docker Support** - Simplified development and deployment.
 
 ---
 
 ## Requirements
 
-Before installing the application, make sure you have the following installed:
-
-- Docker
-- Docker Compose
-- Git (for cloning the repository)
+- PHP 8.2 or higher
+- Composer
+- Node.js and NPM (for frontend assets)
+- Docker and Docker Compose (optional for containerization)
 
 ---
 
 ## Installation
 
 ### 1. Clone the Repository
-
 ```bash
 git clone https://github.com/your-repository/store-app.git
 cd store-app
 ```
 
----
-
-### 2. Set Up the Environment
-
-- Copy the example `.env` file and update it as needed:
-
-  ```bash
-  cp .env.example .env
-  ```
-
-- Configure your database and application environment variables in the `.env` file (these will be used by Docker Compose):
-
-  ```dotenv
-  DB_CONNECTION=mysql
-  DB_HOST=mysql
-  DB_PORT=3306
-  DB_DATABASE=store_app
-  DB_USERNAME=root
-  DB_PASSWORD=root
-
-  MYSQL_ROOT_PASSWORD=root
-  MYSQL_DATABASE=store_app
-  MYSQL_USER=root
-  MYSQL_PASSWORD=root
-  ```
-
----
-
-### 3. Build and Start the Docker Containers
-
-1. **Build the Docker images**:
-
-   ```bash
-   docker-compose build
-   ```
-
-2. **Start the containers**:
-
-   ```bash
-   docker-compose up -d
-   ```
-
----
-
-### 4. Set Up Laravel
-
-1. **Install Laravel Dependencies**:
-
-   ```bash
-   docker exec -it laravel-app composer install
-   ```
-
-2. **Generate the Application Key**:
-
-   ```bash
-   docker exec -it laravel-app php artisan key:generate
-   ```
-
-3. **Run Migrations**:
-
-   ```bash
-   docker exec -it laravel-app php artisan migrate
-   ```
-
-4. **Set Permissions**:
-
-   ```bash
-   docker exec -it laravel-app chmod -R 775 /var/www/storage /var/www/bootstrap/cache
-   ```
-
----
-
-### 5. Access the Application
-
-- Laravel App: [http://localhost:9000](http://localhost:9000)
-- phpMyAdmin: [http://localhost:8080](http://localhost:8080)
-
----
-
-## API Documentation
-
-### 1. Generate Swagger Documentation
-
+### 2. Environment Setup
 ```bash
-php artisan l5-swagger:generate
+cp .env.example .env
 ```
 
-### 2. Access Swagger UI
-
-Open the browser and visit:
-```
-http://localhost:8000/api/documentation
-```
-
-### 3. Using Postman for API Testing
-
-1. Set the **base URL**:
-```
-http://localhost:8000/api
+Update `.env` file with your database and other configurations:
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=store_app
+DB_USERNAME=root
+DB_PASSWORD=root
 ```
 
-2. Authentication:
-   - Register a new user at:
-     `POST /register`
-   - Login to get a token:
-     `POST /login`
-   - Use the **Authorization: Bearer <token>** header in subsequent requests.
+### 3. Install Dependencies
+```bash
+composer install
+npm install
+npm run build
+```
 
-3. Example Endpoints:
-   - **Customers**
-     - `GET /customers` - Fetch all customers.
-     - `POST /customers` - Create a new customer.
-   - **Orders**
-     - `GET /orders` - Fetch all orders.
-     - `POST /orders` - Create a new order.
-   - **Products**
-     - `GET /products` - Fetch all products.
-     - `POST /products` - Create a new product.
+### 4. Database Setup
+```bash
+php artisan migrate --seed
+```
+
+---
+
+## Running the Application
+
+### Option 1: Local Development
+```bash
+php artisan serve
+```
+Visit: `http://localhost:8000`
+
+### Option 2: Using Docker
+```bash
+docker-compose up -d
+```
+Visit: `http://localhost:9000`
 
 ---
 
 ## Admin Dashboard
 
-1. Visit: `http://localhost:9000/admin`
-2. Sign in with admin credentials.
-3. Add new products by filling in the required details including name, description, price, stock quantity, category, brand, and product image.
-4. Manage existing products, edit details, or delete products as needed.
+- **Access Admin Dashboard** - `http://localhost:8000/admin/dashboard`
+- **Default Admin Credentials:**
+  - Email: `admin@admin.com`
+  - Password: `password123`
+
+---
+
+## API Documentation
+
+### Generate Swagger Docs
+```bash
+php artisan l5-swagger:generate
+```
+
+### Access Swagger UI
+```
+http://localhost:8000/api/documentation
+```
+
+### Example API Requests
+
+1. **Register User**
+```http
+POST /api/register
+Content-Type: application/json
+{
+  "name": "John",
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+2. **Login User**
+```http
+POST /api/login
+Content-Type: application/json
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+- **Token Response:** Include the token in the `Authorization` header:
+```http
+Authorization: Bearer {token}
+```
+
+3. **Create Product (Admin Only)**
+```http
+POST /api/products
+Authorization: Bearer {token}
+Content-Type: application/json
+{
+  "name": "Sample Product",
+  "description": "Sample description",
+  "price": 100.00
+}
+```
 
 ---
 
 ## Folder Structure
 
-- `app/`: Application logic and service providers
-- `config/`: Application configuration files
-- `database/`: Migrations, seeders, and factories
-- `public/`: Frontend entry point
-- `routes/`: Application routes (`web.php`, `api.php`)
-- `resources/`: Views, Tailwind CSS, and frontend assets
-- `tests/`: Automated tests
+- `app/`: Models and controllers.
+- `resources/`: Views, Tailwind CSS, and JS assets.
+- `database/`: Migrations, seeders, and factories.
+- `routes/`: API and web routes.
+- `public/`: Frontend assets.
 
 ---
 
 ## Testing
-
-To run automated tests:
-
 ```bash
-docker exec -it laravel-app php artisan test
+php artisan test
 ```
 
 ---
 
-## Contributing
+## Additional Notes
 
-Feel free to fork the repository and create pull requests. For significant changes, please open an issue first to discuss your ideas.
+- **Middleware:** Role-based middleware restricts access to admin features.
+- **Image Uploads:** Product images are stored locally.
+- **Favorites and Cart:** Database tables link to products for seamless management.
 
 ---
 
 ## License
-
 This project is open-source and available under the [MIT License](LICENSE).

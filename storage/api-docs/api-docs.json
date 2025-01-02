@@ -6,12 +6,159 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "View Admin Dashboard",
+                "operationId": "ab8026b579f7e78aaa488b3477e4b1f2",
+                "responses": {
+                    "200": {
+                        "description": "Displays the admin dashboard",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "totalProducts": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "totalSuppliers": {
+                                            "type": "integer",
+                                            "example": 5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/products/create": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Show form to create a new product",
+                "operationId": "64fd91ea63e42927cfd4322c56def630",
+                "responses": {
+                    "200": {
+                        "description": "Displays the create product form"
+                    }
+                }
+            }
+        },
+        "/admin/products": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Add a new product",
+                "operationId": "88e73ed73998a59cfae8171b32691314",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "price",
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Sample Product"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "example": 99.99
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/admin/suppliers/create": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Show form to create a new supplier",
+                "operationId": "360a18425f0ea97f4bebd7ded0adfb95",
+                "responses": {
+                    "200": {
+                        "description": "Displays the create supplier form"
+                    }
+                }
+            }
+        },
+        "/admin/suppliers": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Add a new supplier",
+                "operationId": "bb2f7f58528b4b3101d819a64e46264e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Supplier Name"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "supplier@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Supplier created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
         "/api/login": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Authenticate user and return API token",
+                "summary": "Authenticate user for both Web and API access",
+                "description": "Handles web-based login with redirects and API-based login that returns a token.",
                 "operationId": "bc76a9d52929cab7a147ca7b5c527430",
                 "requestBody": {
                     "required": true,
@@ -39,10 +186,26 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Login successful, returns token"
+                        "description": "Login successful - Web users are redirected, API users receive a token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "abc123tokenvalue"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Invalid credentials"
+                    },
+                    "422": {
+                        "description": "Validation error"
                     }
                 }
             }
@@ -52,11 +215,28 @@
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Log out the authenticated user",
-                "operationId": "0ab4e3cf7bc4f7ec81b48f7928c7de7c",
+                "summary": "Log out the authenticated API user",
+                "description": "Invalidates all tokens for the currently authenticated user.",
+                "operationId": "cee92156edc2ec3127253c22cf4a5618",
                 "responses": {
                     "200": {
-                        "description": "Logged out successfully"
+                        "description": "Logged out successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or expired token"
                     }
                 },
                 "security": [
@@ -1212,7 +1392,8 @@
                                 "required": [
                                     "name",
                                     "description",
-                                    "price"
+                                    "price",
+                                    "product_image"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1227,6 +1408,10 @@
                                         "type": "number",
                                         "format": "float",
                                         "example": 99.99
+                                    },
+                                    "product_image": {
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -1299,7 +1484,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
                                     "name": {
@@ -1314,6 +1499,10 @@
                                         "type": "number",
                                         "format": "float",
                                         "example": 149.99
+                                    },
+                                    "product_image": {
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -2360,6 +2549,10 @@
     },
     "tags": [
         {
+            "name": "Admin",
+            "description": "Admin Dashboard and Management APIs"
+        },
+        {
             "name": "Authentication",
             "description": "API Endpoints for User Authentication"
         },
@@ -2426,6 +2619,11 @@
         {
             "name": "Product Suppliers",
             "description": "Product Suppliers"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": []
         }
     ]
 }

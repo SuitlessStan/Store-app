@@ -157,6 +157,11 @@ return [
          * API security definitions. Will be generated into documentation file.
          */
         'securityDefinitions' => [
+            'bearerAuth' => [
+                'type' => 'http',
+                'scheme' => 'bearer',
+                'bearerFormat' => 'JWT',
+            ],
             'securitySchemes' => [
                 /*
                  * Examples of Security schemes
@@ -203,11 +208,16 @@ return [
                     'in' => 'header', // The location of the API key. Valid values are "query" or "header".
                 ],
                 */
+
             ],
             'security' => [
                 /*
                  * Examples of Securities
                  */
+                [
+                    'bearerAuth' => []
+                ],
+
                 [
                     /*
                     'oauth2_security_example' => [
