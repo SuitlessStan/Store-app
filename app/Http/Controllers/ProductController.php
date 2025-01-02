@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @OA\Tag(
@@ -37,11 +38,15 @@ class ProductController extends Controller
      *     summary="Create a new product",
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "description", "price"},
-     *             @OA\Property(property="name", type="string", example="Sample Product"),
-     *             @OA\Property(property="description", type="string", example="Product description here"),
-     *             @OA\Property(property="price", type="number", format="float", example=99.99)
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"name", "description", "price", "product_image"},
+     *                 @OA\Property(property="name", type="string", example="Sample Product"),
+     *                 @OA\Property(property="description", type="string", example="Product description here"),
+     *                 @OA\Property(property="price", type="number", format="float", example=99.99),
+     *                 @OA\Property(property="product_image", type="string", format="binary")
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -60,7 +65,12 @@ class ProductController extends Controller
             'category' => 'required|string|max:255',
             'brand' => 'nullable|string|max:255',
             'stock_quantity' => 'required|integer',
+            'product_image' => 'required|image|mimes:jpg,png,jpeg|max:2048', // New validation rule
         ]);
+
+        // Store Image
+        $imagePath = $request->file('product_image')->store('products', 'public');
+        $validated['product_image'] = $imagePath;
 
         $product = Product::create($validated);
 
@@ -111,10 +121,14 @@ class ProductController extends Controller
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="Updated Product"),
-     *             @OA\Property(property="description", type="string", example="Updated description"),
-     *             @OA\Property(property="price", type="number", format="float", example=149.99)
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="name", type="string", example="Updated Product"),
+     *                 @OA\Property(property="description", type="string", example="Updated description"),
+     *                 @OA\Property(property="price", type="number", format="float", example=149.99),
+     *                 @OA\Property(property="product_image", type="string", format="binary")
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -132,7 +146,28 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        $product->update($request->all());
+        $validated = $request->validate([
+            'name' => 'sometimes|string',
+            'price' => 'sometimes|numeric',
+            'description' => 'nullable|string',
+            'category' => 'sometimes|string|max:255',
+            'brand' => 'nullable|string|max:255',
+            'stock_quantity' => 'sometimes|integer',
+            'product_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048', // Optional for updates
+        ]);
+
+        // Update Image if Provided
+        if ($request->hasFile('product_image')) {
+            // Delete Old Image
+            if ($product->product_image) {
+                Storage::disk('public')->delete($product->product_image);
+            }
+
+            $imagePath = $request->file('product_image')->store('products', 'public');
+            $validated['product_image'] = $imagePath;
+        }
+
+        $product->update($validated);
 
         return response()->json($product, 200);
     }
@@ -161,6 +196,11 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
+        }
+
+        // Delete Image
+        if ($product->product_image) {
+            Storage::disk('public')->delete($product->product_image);
         }
 
         $product->delete();
