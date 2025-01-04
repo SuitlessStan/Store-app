@@ -63,8 +63,12 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+           'category'=>'string',
+            'brand'=>'string',
+            'stock_quantity'=>'required|boolean',
             'price' => 'required|numeric',
             'product_image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
+
         ]);
 
         // Handle file upload
@@ -147,7 +151,7 @@ class ProductController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'sometimes|string',
+            'name' => 'sometimes|required|string',
             'price' => 'sometimes|numeric',
             'description' => 'nullable|string',
             'category' => 'sometimes|string|max:255',
@@ -198,12 +202,12 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
 
+        $product->delete();
+
         // Delete Image
         if ($product->product_image) {
             Storage::disk('public')->delete($product->product_image);
         }
-
-        $product->delete();
 
         return response()->json(['message' => 'Product deleted successfully'], 204);
     }
