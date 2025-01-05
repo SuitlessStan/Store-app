@@ -44,10 +44,11 @@ class ProductController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "description", "price", "product_image"},
+     *             required={"name", "description", "price", "product_image", "discount"},
      *             @OA\Property(property="name", type="string", example="Sample Product"),
      *             @OA\Property(property="description", type="string", example="Product description here"),
      *             @OA\Property(property="price", type="number", format="float", example=99.99),
+     *             @OA\Property(property="discount", type="number", format="float", example=10.00),
      *             @OA\Property(property="product_image", type="string", format="binary")
      *         )
      *     ),
@@ -63,12 +64,12 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-           'category'=>'string',
-            'brand'=>'string',
-            'stock_quantity'=>'required|boolean',
+            'category' => 'string',
+            'brand' => 'string',
+            'stock_quantity' => 'required|integer',
             'price' => 'required|numeric',
+            'discount' => 'nullable|numeric',
             'product_image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
-
         ]);
 
         // Handle file upload
@@ -131,6 +132,7 @@ class ProductController extends Controller
      *                 @OA\Property(property="name", type="string", example="Updated Product"),
      *                 @OA\Property(property="description", type="string", example="Updated description"),
      *                 @OA\Property(property="price", type="number", format="float", example=149.99),
+     *                 @OA\Property(property="discount", type="number", format="float", example=5.00),
      *                 @OA\Property(property="product_image", type="string", format="binary")
      *             )
      *         )
@@ -153,16 +155,16 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|required|string',
             'price' => 'sometimes|numeric',
+            'discount' => 'nullable|numeric',
             'description' => 'nullable|string',
             'category' => 'sometimes|string|max:255',
             'brand' => 'nullable|string|max:255',
             'stock_quantity' => 'sometimes|integer',
-            'product_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048', // Optional for updates
+            'product_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         // Update Image if Provided
         if ($request->hasFile('product_image')) {
-            // Delete Old Image
             if ($product->product_image) {
                 Storage::disk('public')->delete($product->product_image);
             }
@@ -204,7 +206,6 @@ class ProductController extends Controller
 
         $product->delete();
 
-        // Delete Image
         if ($product->product_image) {
             Storage::disk('public')->delete($product->product_image);
         }

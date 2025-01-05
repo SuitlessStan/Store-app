@@ -33,6 +33,11 @@
                         required>
                 </div>
 
+                <div class="form-group">
+                    <label for="discount">Discount (%):</label>
+                    <input type="number" step="0.01" name="discount" class="form-control" value="0">
+                </div>
+
                 <!-- Image Upload -->
                 <div>
                     <label for="product_image" class="block text-sm font-medium text-gray-700">Image:</label>

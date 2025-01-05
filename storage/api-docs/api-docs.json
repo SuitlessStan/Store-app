@@ -1393,7 +1393,8 @@
                                     "name",
                                     "description",
                                     "price",
-                                    "product_image"
+                                    "product_image",
+                                    "discount"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1408,6 +1409,11 @@
                                         "type": "number",
                                         "format": "float",
                                         "example": 99.99
+                                    },
+                                    "discount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10
                                     },
                                     "product_image": {
                                         "type": "string",
@@ -1499,6 +1505,11 @@
                                         "type": "number",
                                         "format": "float",
                                         "example": 149.99
+                                    },
+                                    "discount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 5
                                     },
                                     "product_image": {
                                         "type": "string",
