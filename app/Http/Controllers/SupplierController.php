@@ -55,7 +55,9 @@ class SupplierController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_person' => 'required|email|unique:suppliers,contact_person',
-        ]);
+            'address'=>'required|string',
+            'phone'=>'required|numeric|digits:10'
+            ]);
 
         $supplier = Supplier::create($validated);
 
@@ -120,7 +122,9 @@ class SupplierController extends Controller
         $validated = $request->validate([
             'name' => 'string|max:255',
             'contact_person' => 'email|unique:suppliers,contact_person,' . $id,
-        ]);
+            'address'=>'required|string',
+            'phone'=>'required|numeric|digits:10'
+            ]);
 
         $supplier->update($validated);
 

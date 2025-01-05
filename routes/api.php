@@ -21,7 +21,8 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
-
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 /**
  * @OA\Info(
  *     title="Electronic Store API Documentation",
@@ -30,7 +31,8 @@ use App\Http\Controllers\Auth\VerifyEmailController;
  * )
  */
 
-// Authentication Routes
+
+
 //Route::middleware('api')->group(function () {
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::delete('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');

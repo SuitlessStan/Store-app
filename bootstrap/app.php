@@ -19,13 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth',
             \App\Http\Middleware\AdminMiddleware::class,
         ]);
-
-        $middleware->group('api', [
-            EnsureFrontendRequestsAreStateful::class,
-            ThrottleRequests::class . ':api',
-            SubstituteBindings::class,
-        ]);
-    })
+//
+//        $middleware->group('api', [
+//         //   EnsureFrontendRequestsAreStateful::class,
+//           // ThrottleRequests::class . ':api',
+//            SubstituteBindings::class,
+//        ]);
+   })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
