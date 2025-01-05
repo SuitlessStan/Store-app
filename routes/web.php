@@ -6,9 +6,14 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
-Route::get('/dashboard', function () {
+Route::get('dashboard', function () {
     return redirect('/admin/dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+Route::get('/', function () {
+    return redirect('/login');
+});
+
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');

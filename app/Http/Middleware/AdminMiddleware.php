@@ -10,10 +10,14 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->is_admin) {
-            return $next($request);
+        if (!auth()->check()) {
+            return redirect()->route('auth.login')->with('error', 'Please log in first.');
         }
 
-        return redirect()->route('login')->with('error', 'Unauthorized Access');
+        if (!auth()->user()->is_admin) {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized Access.');
+        }
+
+        return $next($request);
     }
 }

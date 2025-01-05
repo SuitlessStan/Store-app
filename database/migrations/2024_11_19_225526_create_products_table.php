@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('category');
+            $table->string('category')->nullable();
             $table->string('brand')->nullable();
             $table->decimal('price', 10, 2);
             $table->integer('stock_quantity')->default(0);
