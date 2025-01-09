@@ -14,11 +14,15 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('category')->nullable();
             $table->string('brand')->nullable();
             $table->decimal('price', 10, 2);
             $table->integer('stock_quantity')->default(0);
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categories')
+                ->onDelete('cascade');
             $table->timestamps();
+
         });
     }
 

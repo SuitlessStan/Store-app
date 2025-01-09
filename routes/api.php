@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductSupplierController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\CartController;
@@ -107,6 +108,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * )
      */
     Route::apiResource('suppliers', SupplierController::class);
+
+    // Categories
+    /**
+     * @OA\Tag(
+     *      name="Categories",
+     *      description="API Endpoints for Categories"
+     * )
+     */
+    Route::apiResource('categories', CategoryController::class);
+
 
     // Users
     /**

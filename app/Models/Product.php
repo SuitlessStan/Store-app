@@ -23,7 +23,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'category', 'brand', 'price', 'stock_quantity', 'product_image', 'discount'];
+    protected $fillable = ['name', 'description', 'category_id', 'brand', 'price', 'stock_quantity', 'product_image', 'discount'];
 
     public function orderDetails()
     {
@@ -40,9 +40,14 @@ class Product extends Model
         return $this->hasMany(Favorite::class);
     }
 
-    public function carts()
+    public function cart()
     {
         return $this->hasMany(Cart::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
 }
