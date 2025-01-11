@@ -173,7 +173,8 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
-        ]);
+
+            ]);
 
         $category->update($validated);
 

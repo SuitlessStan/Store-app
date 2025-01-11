@@ -17,10 +17,8 @@ return new class extends Migration {
             $table->string('brand')->nullable();
             $table->decimal('price', 10, 2);
             $table->integer('stock_quantity')->default(0);
-            $table->foreign('category_id')
-                ->references('id')
-                ->on('categories')
-                ->onDelete('cascade');
+            $table->foreignId('category_id')
+                ->constrained()->onDelete('cascade');
             $table->timestamps();
 
         });
