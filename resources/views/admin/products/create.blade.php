@@ -13,9 +13,8 @@
                 <!-- Name Field -->
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">Name:</label>
-                    <input type="text" name="name"
-                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+                    <input type="text" name="name" required
+                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <!-- Description Field -->
@@ -25,20 +24,47 @@
                         class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
 
+                <!-- Category Field -->
+                <div>
+                    <label for="category_id" class="block text-sm font-medium text-gray-700">Category:</label>
+                    <select name="category_id" required
+                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select a Category</option>
+                        @foreach($categories as $category)
+                          <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Brand Field -->
+                <div>
+                    <label for="brand" class="block text-sm font-medium text-gray-700">Brand:</label>
+                    <input type="text" name="brand"
+                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Stock Quantity Field -->
+                <div>
+                    <label for="stock_quantity" class="block text-sm font-medium text-gray-700">Stock Quantity:</label>
+                    <input type="number" name="stock_quantity" required
+                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
                 <!-- Price Field -->
                 <div>
                     <label for="price" class="block text-sm font-medium text-gray-700">Price:</label>
-                    <input type="number" step="0.01" name="price"
-                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+                    <input type="number" step="0.01" name="price" required
+                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
+                <!-- Discount Field -->
                 <div class="form-group">
-                    <label for="discount">Discount (%):</label>
-                    <input type="number" step="0.01" name="discount" class="form-control" value="0">
+                    <label for="discount" class="block text-sm font-medium text-gray-700">Discount (%):</label>
+                    <input type="number" step="0.01" name="discount" value="0"
+                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <!-- Image Upload -->
+                <!-- Image Upload Field -->
                 <div>
                     <label for="product_image" class="block text-sm font-medium text-gray-700">Image:</label>
                     <input type="file" name="product_image"
