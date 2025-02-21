@@ -19,9 +19,9 @@ Route::get('/', function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/products/create', [ProductController::class, 'create'])->name('admin.products.create');
+    Route::get('/admin/products', [ProductController::class, 'index'])->name('admin.products.index');
     Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');
     Route::get('/categories/{category}', [CategoryController::class, 'showProducts'])->name('categories.products');
-
 });
 
 Route::get('/sanctum/csrf-cookie', function () {
