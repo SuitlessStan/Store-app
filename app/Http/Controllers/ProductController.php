@@ -81,7 +81,7 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product added successfully!');
+        return redirect()->route('admin.products')->with('success', 'Product added successfully!');
     }
 
     /**
