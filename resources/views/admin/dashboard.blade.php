@@ -36,11 +36,13 @@
         <div class="mt-6">
             <h2 class="text-2xl font-semibold text-white mb-4">Recent Activities</h2>
             <ul class="bg-white p-6 rounded-lg shadow-lg divide-y divide-gray-200">
-                @if(isset($recentActivities) && $recentActivities->count())
+                @if($recentActivities->isNotEmpty())
                     @foreach($recentActivities as $activity)
                         <li class="py-4">
-                            <span class="text-gray-800">{{ $activity->description }}</span>
-                            <span class="text-gray-500 text-sm ml-2">{{ $activity->created_at->diffForHumans() }}</span>
+                            <span class="text-gray-800">{{ $activity['description'] }}</span>
+                            <span class="text-gray-500 text-sm ml-2">
+                                {{ \Carbon\Carbon::parse($activity['created_at'])->diffForHumans() }}
+                            </span>
                         </li>
                     @endforeach
                 @else

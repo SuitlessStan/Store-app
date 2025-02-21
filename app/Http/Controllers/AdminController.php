@@ -46,7 +46,7 @@ class AdminController extends Controller
         foreach ($recentProducts as $product) {
             $recentActivities->push([
                 'type'        => 'Product',
-                'description' => "New product added - {$product->name}",
+                'description' => "Product added: {$product->name}",
                 'created_at'  => $product->created_at,
             ]);
         }
@@ -54,7 +54,7 @@ class AdminController extends Controller
         foreach ($recentSuppliers as $supplier) {
             $recentActivities->push([
                 'type'        => 'Supplier',
-                'description' => "New supplier added - {$supplier->name}",
+                'description' => "Supplier added: {$supplier->name}",
                 'created_at'  => $supplier->created_at,
             ]);
         }
@@ -62,7 +62,7 @@ class AdminController extends Controller
         foreach ($recentOrders as $order) {
             $recentActivities->push([
                 'type'        => 'Order',
-                'description' => "New order placed - #{$order->id}",
+                'description' => "Order placed: #{$order->id} ({$order->status})",
                 'created_at'  => $order->created_at,
             ]);
         }
