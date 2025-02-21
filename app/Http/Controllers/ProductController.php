@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class ProductController extends Controller
 {
+    private const IMAGE_PATH = 'images/products';
     /**
      * @OA\Get(
      *     path="/api/products",
@@ -69,12 +70,12 @@ class ProductController extends Controller
             'stock_quantity' => 'required|integer',
             'price' => 'required|numeric',
             'discount' => 'nullable|numeric',
-            'product_image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
+            'product_image'  => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048'
         ]);
 
-        // Handle file upload
         if ($request->hasFile('product_image')) {
-            $validated['product_image'] = $request->file('product_image')->store('images/products', 'public');
+            $validated['product_image'] = $request->file('product_image')
+                ->store(self::IMAGE_PATH, 'public');
         }
 
         Product::create($validated);
@@ -160,17 +161,16 @@ class ProductController extends Controller
             'category_id' => 'sometimes|exists:categories,id',
             'brand' => 'nullable|string|max:255',
             'stock_quantity' => 'sometimes|integer',
-            'product_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'product_image'  => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048'
         ]);
 
-        // Update Image if Provided
         if ($request->hasFile('product_image')) {
             if ($product->product_image) {
                 Storage::disk('public')->delete($product->product_image);
             }
 
-            $imagePath = $request->file('product_image')->store('products', 'public');
-            $validated['product_image'] = $imagePath;
+            $validated['product_image'] = $request->file('product_image')
+                ->store(self::IMAGE_PATH, 'public');
         }
 
         $product->update($validated);
