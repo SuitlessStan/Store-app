@@ -33,13 +33,48 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $totalProducts = Product::count();
+        $totalProducts  = Product::count();
         $totalSuppliers = Supplier::count();
-        $totalOrders = Order::count();
+        $totalOrders    = Order::count();
 
-        $recentActivities = Activity::orderBy('created_at', 'desc')->take(10)->get();
+        $recentProducts  = Product::orderBy('created_at', 'desc')->take(10)->get();
+        $recentSuppliers = Supplier::orderBy('created_at', 'desc')->take(10)->get();
+        $recentOrders    = Order::orderBy('created_at', 'desc')->take(10)->get();
 
-        return view('admin.dashboard', compact('totalProducts', 'totalSuppliers', 'totalOrders', 'recentActivities'));
+        $recentActivities = collect();
+
+        foreach ($recentProducts as $product) {
+            $recentActivities->push([
+                'type'        => 'Product',
+                'description' => "New product added - {$product->name}",
+                'created_at'  => $product->created_at,
+            ]);
+        }
+
+        foreach ($recentSuppliers as $supplier) {
+            $recentActivities->push([
+                'type'        => 'Supplier',
+                'description' => "New supplier added - {$supplier->name}",
+                'created_at'  => $supplier->created_at,
+            ]);
+        }
+
+        foreach ($recentOrders as $order) {
+            $recentActivities->push([
+                'type'        => 'Order',
+                'description' => "New order placed - #{$order->id}",
+                'created_at'  => $order->created_at,
+            ]);
+        }
+
+        $recentActivities = $recentActivities->sortByDesc('created_at')->take(10);
+
+        return view('admin.dashboard', compact(
+            'totalProducts', 
+            'totalSuppliers', 
+            'totalOrders', 
+            'recentActivities'
+        ));
     }
 
     /**
