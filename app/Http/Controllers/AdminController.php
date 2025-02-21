@@ -35,8 +35,11 @@ class AdminController extends Controller
     {
         $totalProducts = Product::count();
         $totalSuppliers = Supplier::count();
+        $totalOrders = Order::count();
 
-        return view('admin.dashboard', compact('totalProducts', 'totalSuppliers'));
+        $recentActivities = Activity::orderBy('created_at', 'desc')->take(10)->get();
+
+        return view('admin.dashboard', compact('totalProducts', 'totalSuppliers', 'totalOrders', 'recentActivities'));
     }
 
     /**
