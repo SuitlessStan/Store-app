@@ -81,6 +81,10 @@ class ProductController extends Controller
 
         Product::create($validated);
 
+        if (isset($validated['discount']) && isset($validated['price'])) {
+            $product->price_after_discount = $product->price * (1 - ($validated['discount'] / 100));
+        }
+
         return redirect()->route('admin.products')->with('success', 'Product added successfully!');
     }
 
@@ -175,6 +179,11 @@ class ProductController extends Controller
         }
 
         $product->update($validated);
+
+        if (isset($validated['discount']) && isset($validated['price'])) {
+            $product->price_after_discount = $product->price * (1 - ($validated['discount'] / 100));
+            $product->save();
+        }
 
         return response()->json($product, 200);
     }

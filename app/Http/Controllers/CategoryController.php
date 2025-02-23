@@ -133,6 +133,23 @@ class CategoryController extends Controller
         return response()->json($products, 200);
     }
 
+    public function create()
+    {
+        return view('admin.categories.create');
+    }
+
+    public function webStore(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name',
+            'description' => 'nullable|string',
+        ]);
+
+        Category::create($validated);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Category created successfully!');
+    }
+
     /**
      * @OA\Put(
      *     path="/api/categories/{id}",
@@ -211,6 +228,6 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return response()->json(['message' => 'Category deleted successfully'], 200);
+        return response()->json(null, 204);
     }
 }

@@ -21,7 +21,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/products/create', [ProductController::class, 'create'])->name('admin.products.create');
     Route::get('/admin/products', [ProductController::class, 'index'])->name('admin.products');
     Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');
-    Route::get('/categories/{category}', [CategoryController::class, 'showProducts'])->name('categories.products');
+    Route::get('/admin/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
+    Route::post('/admin/categories', [CategoryController::class, 'webStore'])->name('admin.categories.store'); 
 });
 
 Route::get('/sanctum/csrf-cookie', function () {
