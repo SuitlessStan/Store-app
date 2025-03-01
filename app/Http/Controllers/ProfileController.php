@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profile;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,8 +39,7 @@ class ProfileController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"user_id", "bio"},
-     *             @OA\Property(property="user_id", type="integer", example=1),
+     *             required={"bio"},
      *             @OA\Property(property="bio", type="string", example="This is a sample bio.")
      *         )
      *     ),
@@ -55,7 +53,6 @@ class ProfileController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-           // 'user_id' => 'required|exists:users,id',
             'bio' => 'required|string',
         ]);
 
@@ -150,6 +147,6 @@ class ProfileController extends Controller
         $profile = Profile::findOrFail($id);
         $profile->delete();
 
-        return response()->json(null, 204);
+        return response()->noContent();
     }
 }

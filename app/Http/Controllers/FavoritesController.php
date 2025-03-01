@@ -27,7 +27,7 @@ class FavoritesController extends Controller
     public function index()
     {
         $favorites = Favorite::where('user_id', Auth::id())->with('product')->get();
-        return response()->json($favorites);
+        return response()->json($favorites, 200);
     }
 
     /**
@@ -74,7 +74,7 @@ class FavoritesController extends Controller
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(response=204, description="Favorite removed successfully"),
+     *     @OA\Response(response=200, description="Favorite removed successfully"),
      *     @OA\Response(response=404, description="Favorite not found"),
      *     @OA\Response(response=401, description="Unauthorized")
      * )
@@ -84,6 +84,6 @@ class FavoritesController extends Controller
         $favorite = Favorite::where('user_id', Auth::id())->findOrFail($id);
         $favorite->delete();
 
-        return response()->json(['message' => 'Favorite removed successfully'], 204);
+        return response()->json(['message' => 'Favorite removed successfully'], 200);
     }
 }

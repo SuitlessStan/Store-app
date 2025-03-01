@@ -39,9 +39,11 @@ class CustomerController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "email"},
+     *             required={"name", "email", "phone", "address"},
      *             @OA\Property(property="name", type="string", example="John Doe"),
-     *             @OA\Property(property="email", type="string", example="john.doe@example.com")
+     *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
+     *             @OA\Property(property="phone", type="string", example="123-456-7890"),
+     *             @OA\Property(property="address", type="string", example="123 Main St")
      *         )
      *     ),
      *     @OA\Response(
@@ -54,17 +56,18 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string',
-            'phone' => 'required|string',
+            'name'    => 'required|string',
+            'email'   => 'required|email|unique:customers,email',
+            'phone'   => 'required|string',
             'address' => 'required|string',
         ]);
-//$validated['user_id'] = Auth::id();
+
         $customer = Customer::create($validated);
-        // $customer = Customer::create([...$validated , 'user_id' => Auth::id()]);
+
         return response()->json($customer, 201);
     }
 
-     /**
+    /**
      * @OA\Get(
      *     path="/api/customers/{id}",
      *     tags={"Customers"},
@@ -86,11 +89,6 @@ class CustomerController extends Controller
     public function show($id)
     {
         $customer = Customer::with('orders')->findOrFail($id);
-
-        if (!$customer) {
-            return response()->json(['message' => 'Customer not found'], 404);
-        }
-
         return response()->json($customer, 200);
     }
 
@@ -110,7 +108,9 @@ class CustomerController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="name", type="string", example="Updated Name"),
-     *             @OA\Property(property="email", type="string", example="updated.email@example.com")
+     *             @OA\Property(property="email", type="string", example="updated.email@example.com"),
+     *             @OA\Property(property="phone", type="string", example="987-654-3210"),
+     *             @OA\Property(property="address", type="string", example="456 Secondary St")
      *         )
      *     ),
      *     @OA\Response(
@@ -124,11 +124,14 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
-        if (!$customer) {
-            return response()->json(['message' => 'Customer not found'], 404);
-        }
+        $validated = $request->validate([
+            'name'    => 'sometimes|required|string',
+            'email'   => 'sometimes|required|email|unique:customers,email,' . $customer->id,
+            'phone'   => 'sometimes|required|string',
+            'address' => 'sometimes|required|string',
+        ]);
 
-        $customer->update($request->all());
+        $customer->update($validated);
 
         return response()->json($customer, 200);
     }
@@ -154,13 +157,8 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
-
-        if (!$customer) {
-            return response()->json(['message' => 'Customer not found'], 404);
-        }
-
         $customer->delete();
 
-        return response()->json(['message' => 'Customer deleted successfully'], 200);
+        return response()->noContent();
     }
 }

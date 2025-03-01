@@ -2,34 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\User;
 use App\Models\Product;
 use App\Models\Supplier;
+use Illuminate\Http\Request;
 
-/**
- * @OA\Tag(
- *     name="Admin",
- *     description="Admin Dashboard and Management APIs"
- * )
- */
 class AdminController extends Controller
 {
     /**
-     * @OA\Get(
-     *     path="/admin/dashboard",
-     *     summary="View Admin Dashboard",
-     *     tags={"Admin"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Displays the admin dashboard",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="totalProducts", type="integer", example=10),
-     *             @OA\Property(property="totalSuppliers", type="integer", example=5)
-     *         )
-     *     )
-     * )
+     * Display the admin dashboard.
+     *
+     * This method retrieves counts for products, suppliers, and orders,
+     * along with the 10 most recent activities, and returns the admin dashboard view.
      */
     public function index()
     {
@@ -78,15 +62,7 @@ class AdminController extends Controller
     }
 
     /**
-     * @OA\Get(
-     *     path="/admin/products/create",
-     *     summary="Show form to create a new product",
-     *     tags={"Admin"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Displays the create product form"
-     *     )
-     * )
+     * Show the form to create a new product.
      */
     public function createProduct()
     {
@@ -94,31 +70,16 @@ class AdminController extends Controller
     }
 
     /**
-     * @OA\Post(
-     *     path="/admin/products",
-     *     summary="Add a new product",
-     *     tags={"Admin"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "price", "quantity"},
-     *             @OA\Property(property="name", type="string", example="Sample Product"),
-     *             @OA\Property(property="price", type="number", example=99.99),
-     *             @OA\Property(property="quantity", type="integer", example=10)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Product created successfully"
-     *     ),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
+     * Store a new product.
+     *
+     * Validates the request data, creates a product record, and then redirects
+     * back to the admin dashboard with a success message.
      */
     public function storeProduct(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
+            'name'     => 'required|string|max:255',
+            'price'    => 'required|numeric',
             'quantity' => 'required|integer',
         ]);
 
@@ -128,15 +89,7 @@ class AdminController extends Controller
     }
 
     /**
-     * @OA\Get(
-     *     path="/admin/suppliers/create",
-     *     summary="Show form to create a new supplier",
-     *     tags={"Admin"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Displays the create supplier form"
-     *     )
-     * )
+     * Show the form to create a new supplier.
      */
     public function createSupplier()
     {
@@ -144,29 +97,15 @@ class AdminController extends Controller
     }
 
     /**
-     * @OA\Post(
-     *     path="/admin/suppliers",
-     *     summary="Add a new supplier",
-     *     tags={"Admin"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "email"},
-     *             @OA\Property(property="name", type="string", example="Supplier Name"),
-     *             @OA\Property(property="email", type="string", example="supplier@example.com")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Supplier created successfully"
-     *     ),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
+     * Store a new supplier.
+     *
+     * Validates the request data, creates a supplier record, and then redirects
+     * back to the admin dashboard with a success message.
      */
     public function storeSupplier(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:suppliers,email',
         ]);
 

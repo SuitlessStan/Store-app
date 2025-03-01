@@ -54,10 +54,13 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8'
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
         ]);
+
+        // Hash the password before saving
+        $validated['password'] = bcrypt($validated['password']);
 
         $user = User::create($validated);
 
@@ -120,8 +123,8 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'string|max:255',
-            'email' => 'email|unique:users,email,' . $id,
+            'name'  => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $id,
         ]);
 
         $user->update($validated);
@@ -152,6 +155,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json(null, 204);
+        return response()->noContent();
     }
 }

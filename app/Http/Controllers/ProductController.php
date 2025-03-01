@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Category;
 
 /**
  * @OA\Tag(
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     private const IMAGE_PATH = 'images/products';
+
     /**
      * @OA\Get(
      *     path="/api/products",
@@ -32,9 +34,10 @@ class ProductController extends Controller
         return response()->json(Product::all(), 200);
     }
 
+    // This method returns an HTML view for the admin panel.
     public function create()
     {
-        $categories = \App\Models\Category::all();
+        $categories = Category::all();
         return view('admin.products.create', compact('categories'));
     }
 
@@ -46,9 +49,12 @@ class ProductController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "description", "price", "product_image", "discount"},
+     *             required={"name", "category_id", "stock_quantity", "price"},
      *             @OA\Property(property="name", type="string", example="Sample Product"),
      *             @OA\Property(property="description", type="string", example="Product description here"),
+     *             @OA\Property(property="category_id", type="integer", example=1),
+     *             @OA\Property(property="brand", type="string", example="Sample Brand"),
+     *             @OA\Property(property="stock_quantity", type="integer", example=10),
      *             @OA\Property(property="price", type="number", format="float", example=99.99),
      *             @OA\Property(property="discount", type="number", format="float", example=10.00),
      *             @OA\Property(property="product_image", type="string", format="binary")
@@ -67,7 +73,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
-            'brand' => 'string',
+            'brand' => 'nullable|string|max:255',
             'stock_quantity' => 'required|integer',
             'price' => 'required|numeric',
             'discount' => 'nullable|numeric',
@@ -79,10 +85,11 @@ class ProductController extends Controller
                 ->store(self::IMAGE_PATH, 'public');
         }
 
-        Product::create($validated);
+        $product = Product::create($validated);
 
         if (isset($validated['discount']) && isset($validated['price'])) {
             $product->price_after_discount = $product->price * (1 - ($validated['discount'] / 100));
+            $product->save();
         }
 
         return redirect()->route('admin.products')->with('success', 'Product added successfully!');
@@ -137,6 +144,9 @@ class ProductController extends Controller
      *             @OA\Schema(
      *                 @OA\Property(property="name", type="string", example="Updated Product"),
      *                 @OA\Property(property="description", type="string", example="Updated description"),
+     *                 @OA\Property(property="category_id", type="integer", example=1),
+     *                 @OA\Property(property="brand", type="string", example="Updated Brand"),
+     *                 @OA\Property(property="stock_quantity", type="integer", example=5),
      *                 @OA\Property(property="price", type="number", format="float", example=149.99),
      *                 @OA\Property(property="discount", type="number", format="float", example=5.00),
      *                 @OA\Property(property="product_image", type="string", format="binary")
@@ -201,7 +211,7 @@ class ProductController extends Controller
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
-     *         response=204,
+     *         response=200,
      *         description="Product deleted successfully"
      *     )
      * )
@@ -220,6 +230,6 @@ class ProductController extends Controller
             Storage::disk('public')->delete($product->product_image);
         }
 
-        return response()->json(['message' => 'Product deleted successfully'], 204);
+        return response()->json(['message' => 'Product deleted successfully'], 200);
     }
 }

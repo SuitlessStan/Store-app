@@ -6,80 +6,64 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/admin/dashboard": {
+        "/api/addresses": {
             "get": {
                 "tags": [
-                    "Admin"
+                    "Addresses"
                 ],
-                "summary": "View Admin Dashboard",
-                "operationId": "ab8026b579f7e78aaa488b3477e4b1f2",
+                "summary": "Get list of addresses for the authenticated user",
+                "operationId": "33ccea30443418dbab9242aa67931614",
                 "responses": {
                     "200": {
-                        "description": "Displays the admin dashboard",
+                        "description": "Addresses retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "totalProducts": {
-                                            "type": "integer",
-                                            "example": 10
-                                        },
-                                        "totalSuppliers": {
-                                            "type": "integer",
-                                            "example": 5
-                                        }
-                                    },
-                                    "type": "object"
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Address"
+                                    }
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
-            }
-        },
-        "/admin/products/create": {
-            "get": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Show form to create a new product",
-                "operationId": "64fd91ea63e42927cfd4322c56def630",
-                "responses": {
-                    "200": {
-                        "description": "Displays the create product form"
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
                     }
-                }
-            }
-        },
-        "/admin/products": {
+                ]
+            },
             "post": {
                 "tags": [
-                    "Admin"
+                    "Addresses"
                 ],
-                "summary": "Add a new product",
-                "operationId": "88e73ed73998a59cfae8171b32691314",
+                "summary": "Create a new address for the authenticated user",
+                "operationId": "5549e34fec9817a9794302a767fc7fde",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
-                                    "price",
-                                    "quantity"
+                                    "address",
+                                    "label"
                                 ],
                                 "properties": {
-                                    "name": {
+                                    "address": {
                                         "type": "string",
-                                        "example": "Sample Product"
+                                        "example": "123 Main St, City, Country"
                                     },
-                                    "price": {
-                                        "type": "number",
-                                        "example": 99.99
-                                    },
-                                    "quantity": {
-                                        "type": "integer",
-                                        "example": 10
+                                    "label": {
+                                        "type": "string",
+                                        "enum": [
+                                            "home",
+                                            "work"
+                                        ],
+                                        "example": "home"
                                     }
                                 },
                                 "type": "object"
@@ -89,52 +73,64 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Product created successfully"
+                        "description": "Address created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Address"
+                                }
+                            }
+                        }
                     },
                     "422": {
                         "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/admin/suppliers/create": {
-            "get": {
+        "/api/addresses/{id}": {
+            "put": {
                 "tags": [
-                    "Admin"
+                    "Addresses"
                 ],
-                "summary": "Show form to create a new supplier",
-                "operationId": "360a18425f0ea97f4bebd7ded0adfb95",
-                "responses": {
-                    "200": {
-                        "description": "Displays the create supplier form"
+                "summary": "Update an existing address",
+                "operationId": "2f078db19c8d7e5a374faa4b048e4c45",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Address ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
-                }
-            }
-        },
-        "/admin/suppliers": {
-            "post": {
-                "tags": [
-                    "Admin"
                 ],
-                "summary": "Add a new supplier",
-                "operationId": "bb2f7f58528b4b3101d819a64e46264e",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "name",
-                                    "email"
-                                ],
                                 "properties": {
-                                    "name": {
+                                    "address": {
                                         "type": "string",
-                                        "example": "Supplier Name"
+                                        "example": "456 New Address St, City, Country"
                                     },
-                                    "email": {
+                                    "label": {
                                         "type": "string",
-                                        "example": "supplier@example.com"
+                                        "enum": [
+                                            "home",
+                                            "work"
+                                        ],
+                                        "example": "work"
                                     }
                                 },
                                 "type": "object"
@@ -143,13 +139,65 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Supplier created successfully"
+                    "200": {
+                        "description": "Address updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Address"
+                                }
+                            }
+                        }
                     },
                     "422": {
                         "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Unauthorized to modify this address"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Addresses"
+                ],
+                "summary": "Delete an address",
+                "operationId": "3380f49103f9fb0f4a126d324894a33a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Address ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Address deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Unauthorized to delete this address"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/login": {
@@ -714,7 +762,7 @@
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "200": {
                         "description": "Cart item removed successfully"
                     },
                     "404": {
@@ -996,7 +1044,9 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "email"
+                                    "email",
+                                    "phone",
+                                    "address"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1006,6 +1056,14 @@
                                     "email": {
                                         "type": "string",
                                         "example": "john.doe@example.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "123-456-7890"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main St"
                                     }
                                 },
                                 "type": "object"
@@ -1088,6 +1146,14 @@
                                     "email": {
                                         "type": "string",
                                         "example": "updated.email@example.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "987-654-3210"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "456 Secondary St"
                                     }
                                 },
                                 "type": "object"
@@ -1214,7 +1280,7 @@
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "200": {
                         "description": "Favorite removed successfully"
                     },
                     "404": {
@@ -1232,28 +1298,6 @@
             }
         },
         "/api/orders": {
-            "get": {
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Get list of orders",
-                "operationId": "2cd7e03021e72d9d799c12dfe179c865",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Order"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "tags": [
                     "Orders"
@@ -1267,12 +1311,24 @@
                             "schema": {
                                 "required": [
                                     "customer_id",
+                                    "order_date",
+                                    "total_amount",
                                     "status"
                                 ],
                                 "properties": {
                                     "customer_id": {
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "order_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-03-01"
+                                    },
+                                    "total_amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 99.99
                                     },
                                     "status": {
                                         "type": "string",
@@ -1298,114 +1354,24 @@
                 }
             }
         },
-        "/api/orders/{id}": {
-            "get": {
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Get a single order",
-                "operationId": "c29621029e70f65247909d3e09031118",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Order ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Order"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Update an order",
-                "operationId": "6a7029f5510ca08e28a2d58a5fe19439",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Order ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "status": {
-                                        "type": "string",
-                                        "example": "Completed"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Order updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Order"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Delete an order",
-                "operationId": "303a7b797887b66c7790c4c187b54790",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Order ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Order deleted successfully"
-                    }
-                }
-            }
-        },
-        "/api/order-details": {
+        "/api/orders/{order}/order-details": {
             "get": {
                 "tags": [
                     "Order Details"
                 ],
-                "summary": "Get list of order details",
-                "operationId": "f97019837839800cbcb07cb29cb7d79d",
+                "summary": "Get list of order details for a specific order",
+                "operationId": "86b3bc72bbcafb2af662c3ca723f5d29",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -1427,23 +1393,29 @@
                     "Order Details"
                 ],
                 "summary": "Create a new order detail",
-                "operationId": "294519256e6751e07791f359fd7efeb6",
+                "operationId": "663110de82bdb227b7646bff0d1fd713",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "order_id",
                                     "product_id",
                                     "quantity",
                                     "price"
                                 ],
                                 "properties": {
-                                    "order_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
                                     "product_id": {
                                         "type": "integer",
                                         "example": 1
@@ -1477,14 +1449,23 @@
                 }
             }
         },
-        "/api/order-details/{id}": {
+        "/api/orders/{order}/order-details/{id}": {
             "get": {
                 "tags": [
                     "Order Details"
                 ],
                 "summary": "Get a single order detail",
-                "operationId": "3ab9e8c793da62b02f10bc391303c46f",
+                "operationId": "b7ae02e5c3dfbccf645b92b4ee0085c3",
                 "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -1513,8 +1494,17 @@
                     "Order Details"
                 ],
                 "summary": "Update an order detail",
-                "operationId": "b9feb7f9c26dcd2f30aa1b95fdbeec63",
+                "operationId": "f1d82b9747579dec65257b04c502716b",
                 "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -1564,8 +1554,17 @@
                     "Order Details"
                 ],
                 "summary": "Delete an order detail",
-                "operationId": "cda3f9927ff4e14ced8d63412aec46da",
+                "operationId": "aa075df706a49614c61dc54ec3d3c64e",
                 "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -1619,10 +1618,9 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "description",
-                                    "price",
-                                    "product_image",
-                                    "discount"
+                                    "category_id",
+                                    "stock_quantity",
+                                    "price"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1632,6 +1630,18 @@
                                     "description": {
                                         "type": "string",
                                         "example": "Product description here"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "brand": {
+                                        "type": "string",
+                                        "example": "Sample Brand"
+                                    },
+                                    "stock_quantity": {
+                                        "type": "integer",
+                                        "example": 10
                                     },
                                     "price": {
                                         "type": "number",
@@ -1729,6 +1739,18 @@
                                         "type": "string",
                                         "example": "Updated description"
                                     },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "brand": {
+                                        "type": "string",
+                                        "example": "Updated Brand"
+                                    },
+                                    "stock_quantity": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
                                     "price": {
                                         "type": "number",
                                         "format": "float",
@@ -1780,35 +1802,24 @@
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "200": {
                         "description": "Product deleted successfully"
                     }
                 }
             }
         },
-        "/api/product-suppliers": {
+        "/api/product-suppliers/create": {
             "get": {
-                "tags": [
-                    "Product Suppliers"
-                ],
-                "summary": "Get list of product suppliers",
-                "operationId": "6f19ae620ed97ad900a1162795f5745d",
+                "summary": "Show the form for creating a new product supplier",
+                "operationId": "5da3ad800a78ab7f4858c9f7ed9a86a0",
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ProductSupplier"
-                                    }
-                                }
-                            }
-                        }
+                        "description": "Success"
                     }
                 }
-            },
+            }
+        },
+        "/api/product-suppliers": {
             "post": {
                 "tags": [
                     "Product Suppliers"
@@ -1822,7 +1833,8 @@
                             "schema": {
                                 "required": [
                                     "product_id",
-                                    "supplier_id"
+                                    "supplier_id",
+                                    "cost_price"
                                 ],
                                 "properties": {
                                     "product_id": {
@@ -1832,6 +1844,11 @@
                                     "supplier_id": {
                                         "type": "integer",
                                         "example": 2
+                                    },
+                                    "cost_price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10.5
                                     }
                                 },
                                 "type": "object"
@@ -1849,129 +1866,6 @@
                                 }
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/api/product-suppliers/create": {
-            "get": {
-                "summary": "Show the form for creating a new resource",
-                "operationId": "5da3ad800a78ab7f4858c9f7ed9a86a0",
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    }
-                }
-            }
-        },
-        "/api/product-suppliers/{id}": {
-            "get": {
-                "tags": [
-                    "Product Suppliers"
-                ],
-                "summary": "Get a single product supplier",
-                "operationId": "e64327f233277fbd08fe95ed8d79f715",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Product Supplier ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ProductSupplier"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Product Suppliers"
-                ],
-                "summary": "Update a specific product-supplier relationship",
-                "operationId": "5a7b00c67053db1a1a5a1628e5280e5f",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Product Supplier ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "product_id",
-                                    "supplier_id"
-                                ],
-                                "properties": {
-                                    "product_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "supplier_id": {
-                                        "type": "integer",
-                                        "example": 2
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Updated Successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ProductSupplier"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Product Suppliers"
-                ],
-                "summary": "Delete a product supplier",
-                "operationId": "1cdeb8a2bb6b8a92e0c4b132e24763b5",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Product Supplier ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Product supplier deleted successfully"
                     }
                 }
             }
@@ -2011,14 +1905,9 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "user_id",
                                     "bio"
                                 ],
                                 "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
                                     "bio": {
                                         "type": "string",
                                         "example": "This is a sample bio."
@@ -2180,7 +2069,9 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "contact_person"
+                                    "contact_person",
+                                    "address",
+                                    "phone"
                                 ],
                                 "properties": {
                                     "name": {
@@ -2190,6 +2081,14 @@
                                     "contact_person": {
                                         "type": "string",
                                         "example": "supplier@example.com"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Supplier St"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "1234567890"
                                     }
                                 },
                                 "type": "object"
@@ -2264,6 +2163,10 @@
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "address",
+                                    "phone"
+                                ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -2272,6 +2175,14 @@
                                     "contact_person": {
                                         "type": "string",
                                         "example": "updated@example.com"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "456 New Supplier St"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "0987654321"
                                     }
                                 },
                                 "type": "object"
@@ -2496,6 +2407,43 @@
     },
     "components": {
         "schemas": {
+            "Address": {
+                "title": "Address",
+                "description": "Address model schema",
+                "required": [
+                    "id",
+                    "user_id",
+                    "address",
+                    "label"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "123 Main St, City, Country"
+                    },
+                    "label": {
+                        "type": "string",
+                        "example": "home"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
             "Category": {
                 "title": "Category",
                 "description": "Category entity",
@@ -2822,8 +2770,8 @@
     },
     "tags": [
         {
-            "name": "Admin",
-            "description": "Admin Dashboard and Management APIs"
+            "name": "Addresses",
+            "description": "API Endpoints for managing user addresses"
         },
         {
             "name": "Authentication",

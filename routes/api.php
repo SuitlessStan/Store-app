@@ -32,9 +32,6 @@ use Illuminate\Support\Facades\RateLimiter;
  * )
  */
 
-
-
-//Route::middleware('api')->group(function () {
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::delete('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
 Route::post('/register', [RegisteredUserController::class, 'store']);
@@ -43,7 +40,6 @@ Route::post('/password/reset', [NewPasswordController::class, 'store']);
 
 Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])->middleware(['signed'])->name('verification.verify');
 Route::post('/email/resend', [EmailVerificationNotificationController::class, 'store'])->middleware('auth:sanctum');
-//});
 
 Route::middleware(['auth:sanctum'])->group(function () {
     // Customers
@@ -137,9 +133,27 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::apiResource('admins', AdminController::class);
 
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::apiResource('favorites', FavoritesController::class)->only(['index', 'store', 'destroy']);
-        Route::apiResource('cart', CartController::class)->only(['index', 'store', 'update', 'destroy']);
-    });
+    /**
+     * @OA\Tag(
+     *      name="Address"
+     *      descriptions="API Endpoints for Address"
+     * )
+     */
+    Route::apiResource('addresses', AddressController::class);
 
+    /**
+     * @OA\Tag(
+     *      name="Favorties"
+     *      descriptions="API Endpoints for Favorties"
+     * )
+     */
+    Route::apiResource('favorties', FavortiesController::class);
+
+    /**
+     * @OA\Tag(
+     *      name="Cart"
+     *      descriptions="API Endpoints for Cart"
+     * )
+     */
+    Route::apiResource('cart', CartController::class);
 });

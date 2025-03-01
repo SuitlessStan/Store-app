@@ -27,7 +27,7 @@ class CartController extends Controller
     public function index()
     {
         $cart = Cart::where('user_id', Auth::id())->with('product')->get();
-        return response()->json($cart);
+        return response()->json($cart, 200);
     }
 
     /**
@@ -91,19 +91,17 @@ class CartController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Only validating and updating the quantity field.
         $request->validate([
-            'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
         $cart = Cart::where('user_id', Auth::id())->findOrFail($id);
         $cart->update([
-            'user_id' => Auth::id(),
-            'product_id' => $request->product_id,
             'quantity' => $request->quantity
         ]);
 
-        return response()->json($cart);
+        return response()->json($cart, 200);
     }
 
     /**
@@ -118,7 +116,7 @@ class CartController extends Controller
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(response=204, description="Cart item removed successfully"),
+     *     @OA\Response(response=200, description="Cart item removed successfully"),
      *     @OA\Response(response=404, description="Cart item not found"),
      *     @OA\Response(response=401, description="Unauthorized")
      * )
@@ -128,6 +126,6 @@ class CartController extends Controller
         $cart = Cart::where('user_id', Auth::id())->findOrFail($id);
         $cart->delete();
 
-        return response()->json(['message' => 'Cart item removed successfully'], 204);
+        return response()->json(['message' => 'Cart item removed successfully'], 200);
     }
 }

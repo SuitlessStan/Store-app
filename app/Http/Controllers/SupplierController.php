@@ -38,9 +38,11 @@ class SupplierController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "contact_person"},
+     *             required={"name", "contact_person", "address", "phone"},
      *             @OA\Property(property="name", type="string", example="Supplier Name"),
-     *             @OA\Property(property="contact_person", type="string", example="supplier@example.com")
+     *             @OA\Property(property="contact_person", type="string", example="supplier@example.com"),
+     *             @OA\Property(property="address", type="string", example="123 Supplier St"),
+     *             @OA\Property(property="phone", type="string", example="1234567890")
      *         )
      *     ),
      *     @OA\Response(
@@ -55,9 +57,9 @@ class SupplierController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_person' => 'required|email|unique:suppliers,contact_person',
-            'address'=>'required|string',
-            'phone'=>'required|numeric|digits:10'
-            ]);
+            'address' => 'required|string',
+            'phone' => 'required|numeric|digits:10',
+        ]);
 
         $supplier = Supplier::create($validated);
 
@@ -104,8 +106,11 @@ class SupplierController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
+     *             required={"address", "phone"},
      *             @OA\Property(property="name", type="string", example="Updated Supplier Name"),
-     *             @OA\Property(property="contact_person", type="string", example="updated@example.com")
+     *             @OA\Property(property="contact_person", type="string", example="updated@example.com"),
+     *             @OA\Property(property="address", type="string", example="456 New Supplier St"),
+     *             @OA\Property(property="phone", type="string", example="0987654321")
      *         )
      *     ),
      *     @OA\Response(
@@ -120,11 +125,11 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'string|max:255',
-            'contact_person' => 'email|unique:suppliers,contact_person,' . $id,
-            'address'=>'required|string',
-            'phone'=>'required|numeric|digits:10'
-            ]);
+            'name' => 'sometimes|string|max:255',
+            'contact_person' => 'sometimes|email|unique:suppliers,contact_person,' . $id,
+            'address' => 'required|string',
+            'phone' => 'required|numeric|digits:10',
+        ]);
 
         $supplier->update($validated);
 
@@ -154,6 +159,6 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
         $supplier->delete();
 
-        return response()->json(null, 204);
+        return response()->noContent();
     }
 }

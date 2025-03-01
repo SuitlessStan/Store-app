@@ -16,31 +16,47 @@ class OrderDetailController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/order-details",
+     *     path="/api/orders/{order}/order-details",
      *     tags={"Order Details"},
-     *     summary="Get list of order details",
+     *     summary="Get list of order details for a specific order",
+     *     @OA\Parameter(
+     *         name="order",
+     *         in="path",
+     *         required=true,
+     *         description="Order ID",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/OrderDetail"))
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/OrderDetail")
+     *         )
      *     )
      * )
      */
     public function index(Order $order)
     {
-        return response()->json(['order_detials' => $order->orderDetails], 200);
+        return response()->json(['order_details' => $order->orderDetails], 200);
     }
 
     /**
      * @OA\Post(
-     *     path="/api/order-details",
+     *     path="/api/orders/{order}/order-details",
      *     tags={"Order Details"},
      *     summary="Create a new order detail",
+     *     @OA\Parameter(
+     *         name="order",
+     *         in="path",
+     *         required=true,
+     *         description="Order ID",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"order_id", "product_id", "quantity", "price"},
-     *             @OA\Property(property="order_id", type="integer", example=1),
+     *             required={"product_id", "quantity", "price"},
      *             @OA\Property(property="product_id", type="integer", example=1),
      *             @OA\Property(property="quantity", type="integer", example=2),
      *             @OA\Property(property="price", type="number", format="float", example=49.99)
@@ -53,25 +69,30 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function store(Request $request,Order $order)
+    public function store(Request $request, Order $order)
     {
         $validated = $request->validate([
-           // 'order_id' => 'required|exists:orders,id',
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
+            'quantity'   => 'required|integer|min:1',
+            'price'      => 'required|numeric|min:0',
         ]);
 
-       // $orderDetail = OrderDetail::create($validated);
         $orderDetail = $order->orderDetails()->create($validated);
         return response()->json($orderDetail, 201);
     }
 
     /**
      * @OA\Get(
-     *     path="/api/order-details/{id}",
+     *     path="/api/orders/{order}/order-details/{id}",
      *     tags={"Order Details"},
      *     summary="Get a single order detail",
+     *     @OA\Parameter(
+     *         name="order",
+     *         in="path",
+     *         required=true,
+     *         description="Order ID",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -86,7 +107,7 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function show(Order $order,$id)
+    public function show(Order $order, $id)
     {
         $orderDetail = $order->orderDetails()->find($id);
 
@@ -99,9 +120,16 @@ class OrderDetailController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/order-details/{id}",
+     *     path="/api/orders/{order}/order-details/{id}",
      *     tags={"Order Details"},
      *     summary="Update an order detail",
+     *     @OA\Parameter(
+     *         name="order",
+     *         in="path",
+     *         required=true,
+     *         description="Order ID",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -123,7 +151,7 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function update(Request $request,Order $order, $id)
+    public function update(Request $request, Order $order, $id)
     {
         $orderDetail = $order->orderDetails()->find($id);
 
@@ -133,7 +161,7 @@ class OrderDetailController extends Controller
 
         $validated = $request->validate([
             'quantity' => 'sometimes|required|integer|min:1',
-            'price' => 'sometimes|required|numeric|min:0',
+            'price'    => 'sometimes|required|numeric|min:0',
         ]);
 
         $orderDetail->update($validated);
@@ -143,9 +171,16 @@ class OrderDetailController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/order-details/{id}",
+     *     path="/api/orders/{order}/order-details/{id}",
      *     tags={"Order Details"},
      *     summary="Delete an order detail",
+     *     @OA\Parameter(
+     *         name="order",
+     *         in="path",
+     *         required=true,
+     *         description="Order ID",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -159,15 +194,16 @@ class OrderDetailController extends Controller
      *     )
      * )
      */
-    public function destroy(Order $order,$id)
+    public function destroy(Order $order, $id)
     {
         $orderDetail = $order->orderDetails()->find($id);
 
         if (!$orderDetail) {
-            return response()->json(['message' => 'OrderDetail not found'], 404);
+            return response()->json(['message' => 'Order detail not found'], 404);
         }
 
         $orderDetail->delete();
-        return response()->json(null, 204);
+
+        return response()->noContent();
     }
 }

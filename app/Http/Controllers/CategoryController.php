@@ -98,7 +98,6 @@ class CategoryController extends Controller
         return response()->json($category, 200);
     }
 
-
     /**
      * @OA\Get(
      *     path="/categories/{category}",
@@ -118,18 +117,15 @@ class CategoryController extends Controller
      *     )
      * )
      */
-    public function showProducts($categoryId)
+    public function showProducts($category)
     {
-        $category = Category::findOrFail($categoryId);
-
+        $category = Category::findOrFail($category);
         $products = $category->products;
 
-        // web
         if (!request()->expectsJson()) {
             return view('categories.products', compact('category', 'products'));
         }
 
-        // api
         return response()->json($products, 200);
     }
 
@@ -190,8 +186,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
-
-            ]);
+        ]);
 
         $category->update($validated);
 
@@ -211,10 +206,7 @@ class CategoryController extends Controller
      *         description="Category ID",
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Category deleted successfully"
-     *     ),
+     *     @OA\Response(response=200, description="Category deleted successfully"),
      *     @OA\Response(response=404, description="Category not found")
      * )
      */
@@ -228,6 +220,6 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Category deleted successfully'], 200);
     }
 }
