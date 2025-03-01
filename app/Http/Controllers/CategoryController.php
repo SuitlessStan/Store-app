@@ -137,9 +137,14 @@ class CategoryController extends Controller
     public function webStore(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
+            'name'        => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048'
         ]);
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('categories', 'public');
+        }
 
         Category::create($validated);
 

@@ -5,10 +5,16 @@
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-4xl font-bold text-white">Admin Dashboard</h1>
-            <a href="{{ route('admin.products.create') }}"
-               class="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300">
-                + Add Product
-            </a>
+            <div class="space-x-4">
+                <a href="{{ route('admin.products.create') }}"
+                   class="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300">
+                    + Add Product
+                </a>
+                <a href="{{ route('admin.categories.create') }}"
+                   class="bg-blue-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 transition duration-300">
+                    + Add Category
+                </a>
+            </div>
         </div>
 
         <!-- Statistics Grid -->

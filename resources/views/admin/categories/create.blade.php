@@ -5,7 +5,7 @@
         <h1 class="text-4xl font-bold text-white mb-6">Create Category</h1>
 
         <div class="bg-white p-8 rounded-lg shadow-lg max-w-lg mx-auto">
-            <form action="{{ route('admin.categories.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.categories.store') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
                 @csrf
 
                 <div>
@@ -20,6 +20,13 @@
                     <textarea name="description" id="description" rows="4"
                         class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('description') }}</textarea>
                     @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700">Image:</label>
+                    <input type="file" name="image" id="image"
+                        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    @error('image') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
