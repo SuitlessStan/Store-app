@@ -91,7 +91,6 @@ class CartController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Only validating and updating the quantity field.
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
