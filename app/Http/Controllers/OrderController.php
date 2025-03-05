@@ -78,7 +78,6 @@ class OrderController extends Controller
         if (!$user->customer) {
             return response()->json(['message' => 'No customer record found for the user'], 400);
         }
-        // Use the authenticated user's customer id.
         $validated['customer_id'] = $user->customer->id;
 
         $order = Order::create($validated);
