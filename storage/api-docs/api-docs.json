@@ -64,6 +64,20 @@
                                             "work"
                                         ],
                                         "example": "home"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 40.712776
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -74.005974
+                                    },
+                                    "streetname": {
+                                        "type": "string",
+                                        "example": "Main St"
                                     }
                                 },
                                 "type": "object"
@@ -131,6 +145,20 @@
                                             "work"
                                         ],
                                         "example": "work"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 41
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -75
+                                    },
+                                    "streetname": {
+                                        "type": "string",
+                                        "example": "New Street"
                                     }
                                 },
                                 "type": "object"
@@ -385,7 +413,7 @@
                 "tags": [
                     "Password Reset"
                 ],
-                "summary": "Reset user password",
+                "summary": "Update user password using the current password",
                 "operationId": "52bc2993b4dfd7d7d28bcb315512ae14",
                 "requestBody": {
                     "required": true,
@@ -393,27 +421,22 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "token",
-                                    "email",
+                                    "current_password",
                                     "password",
                                     "password_confirmation"
                                 ],
                                 "properties": {
-                                    "token": {
+                                    "current_password": {
                                         "type": "string",
-                                        "example": "reset-token"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "user@example.com"
+                                        "example": "oldpassword123"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "example": "password123"
+                                        "example": "newpassword123"
                                     },
                                     "password_confirmation": {
                                         "type": "string",
-                                        "example": "password123"
+                                        "example": "newpassword123"
                                     }
                                 },
                                 "type": "object"
@@ -423,15 +446,33 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Password reset successfully"
+                        "description": "Password updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "422": {
                         "description": "Validation error"
                     },
-                    "400": {
-                        "description": "Invalid token or email"
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/password": {
@@ -1280,7 +1321,7 @@
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "Favorite removed successfully"
                     },
                     "404": {
@@ -1298,11 +1339,35 @@
             }
         },
         "/api/orders": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get list of orders",
+                "description": "Display a listing of orders.",
+                "operationId": "2cd7e03021e72d9d799c12dfe179c865",
+                "responses": {
+                    "200": {
+                        "description": "Orders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Order"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Orders"
                 ],
                 "summary": "Create a new order",
+                "description": "Create a new order using the authenticated user's customer record.",
                 "operationId": "d690d6834318e9b064df441e854de8b9",
                 "requestBody": {
                     "required": true,
@@ -1310,16 +1375,11 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "customer_id",
                                     "order_date",
                                     "total_amount",
                                     "status"
                                 ],
                                 "properties": {
-                                    "customer_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
                                     "order_date": {
                                         "type": "string",
                                         "format": "date",
@@ -1333,6 +1393,14 @@
                                     "status": {
                                         "type": "string",
                                         "example": "Pending"
+                                    },
+                                    "delivery_address": {
+                                        "type": "string",
+                                        "example": "123 Main St, City, Country"
+                                    },
+                                    "is_home_delivery": {
+                                        "type": "boolean",
+                                        "example": true
                                     }
                                 },
                                 "type": "object"
@@ -1350,6 +1418,146 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Customer record not found for the user"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/orders/{id}": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get a single order",
+                "description": "Display the specified order.",
+                "operationId": "c29621029e70f65247909d3e09031118",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Update an order",
+                "description": "Update the specified order.",
+                "operationId": "6a7029f5510ca08e28a2d58a5fe19439",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "order_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-03-01"
+                                    },
+                                    "total_amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 99.99
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "Completed"
+                                    },
+                                    "delivery_address": {
+                                        "type": "string",
+                                        "example": "456 Another St, City, Country"
+                                    },
+                                    "is_home_delivery": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Order updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Delete an order",
+                "description": "Remove the specified order.",
+                "operationId": "303a7b797887b66c7790c4c187b54790",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Order deleted successfully"
+                    },
+                    "404": {
+                        "description": "Order not found"
                     }
                 }
             }
@@ -2433,13 +2641,29 @@
                         "type": "string",
                         "example": "home"
                     },
+                    "latitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 40.712776
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -74.005974
+                    },
+                    "streetname": {
+                        "type": "string",
+                        "example": "Main St"
+                    },
                     "created_at": {
                         "type": "string",
-                        "format": "date-time"
+                        "format": "date-time",
+                        "example": "2025-01-01T12:00:00Z"
                     },
                     "updated_at": {
                         "type": "string",
-                        "format": "date-time"
+                        "format": "date-time",
+                        "example": "2025-01-01T12:30:00Z"
                     }
                 },
                 "type": "object"
@@ -2462,6 +2686,11 @@
                         "description": "Description of the category",
                         "type": "string",
                         "example": "Electronics and gadgets"
+                    },
+                    "image": {
+                        "description": "Path to the category image",
+                        "type": "string",
+                        "example": "categories/image.jpg"
                     },
                     "created_at": {
                         "description": "Timestamp when the category was created",
@@ -2787,7 +3016,7 @@
         },
         {
             "name": "Password Reset",
-            "description": "API Endpoints for resetting passwords"
+            "description": "API Endpoints for updating passwords using the current password"
         },
         {
             "name": "Password Update",

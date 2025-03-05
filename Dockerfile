@@ -44,6 +44,10 @@ RUN php artisan config:cache && \
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
+#RUN groupadd --force -g 1000 sail
+#RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1337 sail
+#RUN chown -R sail:sail /var/www/html/Store-app # be sure to put your path
+
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
