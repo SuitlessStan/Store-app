@@ -54,8 +54,16 @@ class FavoritesController extends Controller
             'product_id' => 'required|exists:products,id',
         ]);
 
+        $existingFavorite = Favorite::where('user_id', Auth::id())
+            ->where('product_id', $request->product_id)
+            ->first();
+
+        if ($existingFavorite) {
+            return response()->json(['message' => 'Product is already favorited'], 200);
+        }
+
         $favorite = Favorite::create([
-            'user_id' => Auth::id(),
+            'user_id'    => Auth::id(),
             'product_id' => $request->product_id,
         ]);
 
@@ -74,7 +82,7 @@ class FavoritesController extends Controller
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(response=200, description="Favorite removed successfully"),
+     *     @OA\Response(response=204, description="Favorite removed successfully"),
      *     @OA\Response(response=404, description="Favorite not found"),
      *     @OA\Response(response=401, description="Unauthorized")
      * )
@@ -84,6 +92,6 @@ class FavoritesController extends Controller
         $favorite = Favorite::where('user_id', Auth::id())->findOrFail($id);
         $favorite->delete();
 
-        return response()->json(['message' => 'Favorite removed successfully'], 200);
+        return response()->noContent();
     }
 }

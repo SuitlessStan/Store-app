@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade'); // Foreign key to `orders`
-            $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Foreign key to `products`
+            $table->foreignId('order_id')->constrained()->onDelete('cascade'); 
+            $table->foreignId('product_id')->constrained()->onDelete('cascade'); 
             $table->integer('quantity')->default(1);
             $table->decimal('price', 10, 2);
             $table->timestamps();

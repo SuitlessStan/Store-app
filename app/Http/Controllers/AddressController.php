@@ -48,7 +48,10 @@ class AddressController extends Controller
      *         @OA\JsonContent(
      *             required={"address", "label"},
      *             @OA\Property(property="address", type="string", example="123 Main St, City, Country"),
-     *             @OA\Property(property="label", type="string", example="home", enum={"home", "work"})
+     *             @OA\Property(property="label", type="string", example="home", enum={"home", "work"}),
+     *             @OA\Property(property="latitude", type="number", format="float", example=40.712776),
+     *             @OA\Property(property="longitude", type="number", format="float", example=-74.005974),
+     *             @OA\Property(property="streetname", type="string", example="Main St")
      *         )
      *     ),
      *     @OA\Response(
@@ -63,8 +66,11 @@ class AddressController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'address' => 'required|string|max:255',
-            'label' => 'required|in:home,work',
+            'address'    => 'required|string|max:255',
+            'label'      => 'required|in:home,work',
+            'latitude'   => 'nullable|numeric',
+            'longitude'  => 'nullable|numeric',
+            'streetname' => 'nullable|string|max:255',
         ]);
 
         $address = Auth::user()->addresses()->create($validated);
@@ -89,7 +95,10 @@ class AddressController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="address", type="string", example="456 New Address St, City, Country"),
-     *             @OA\Property(property="label", type="string", example="work", enum={"home", "work"})
+     *             @OA\Property(property="label", type="string", example="work", enum={"home", "work"}),
+     *             @OA\Property(property="latitude", type="number", format="float", example=41.000000),
+     *             @OA\Property(property="longitude", type="number", format="float", example=-75.000000),
+     *             @OA\Property(property="streetname", type="string", example="New Street")
      *         )
      *     ),
      *     @OA\Response(
@@ -109,8 +118,11 @@ class AddressController extends Controller
         }
 
         $validated = $request->validate([
-            'address' => 'sometimes|required|string|max:255',
-            'label' => 'sometimes|required|in:home,work',
+            'address'    => 'sometimes|required|string|max:255',
+            'label'      => 'sometimes|required|in:home,work',
+            'latitude'   => 'sometimes|nullable|numeric',
+            'longitude'  => 'sometimes|nullable|numeric',
+            'streetname' => 'sometimes|nullable|string|max:255',
         ]);
 
         $address->update($validated);
