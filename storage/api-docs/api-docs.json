@@ -1403,7 +1403,7 @@
                                         "type": "boolean",
                                         "example": true
                                     },
-                                    "product_id": {
+                                    "cart_id": {
                                         "type": "integer",
                                         "example": 1
                                     }

@@ -53,7 +53,7 @@ class OrderController extends Controller
      *             @OA\Property(property="status", type="string", example="Pending"),
      *             @OA\Property(property="delivery_address", type="string", example="123 Main St, City, Country"),
      *             @OA\Property(property="is_home_delivery", type="boolean", example=true),
-     *             @OA\Property(property="product_id", type="integer", example=1)
+     *             @OA\Property(property="cart_id", type="integer", example=1)
      *         )
      *     ),
      *     @OA\Response(
