@@ -38,21 +38,22 @@ class OrderController extends Controller
     }
 
     /**
-     * Create a new order using the authenticated user's customer record.
+     * Create a new order using the authenticated user and a provided product_id.
      *
      * @OA\Post(
      *     path="/api/orders",
      *     tags={"Orders"},
-     *     summary="Create a new order",
+     *     summary="Create a new order with product_id",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"order_date", "total_amount", "status"},
+     *             required={"order_date", "total_amount", "status", "product_id"},
      *             @OA\Property(property="order_date", type="string", format="date", example="2025-03-01"),
      *             @OA\Property(property="total_amount", type="number", format="float", example=99.99),
      *             @OA\Property(property="status", type="string", example="Pending"),
      *             @OA\Property(property="delivery_address", type="string", example="123 Main St, City, Country"),
-     *             @OA\Property(property="is_home_delivery", type="boolean", example=true)
+     *             @OA\Property(property="is_home_delivery", type="boolean", example=true),
+     *             @OA\Property(property="product_id", type="integer", example=1)
      *         )
      *     ),
      *     @OA\Response(
@@ -60,7 +61,6 @@ class OrderController extends Controller
      *         description="Order created successfully",
      *         @OA\JsonContent(ref="#/components/schemas/Order")
      *     ),
-     *     @OA\Response(response=400, description="Customer record not found for the user"),
      *     @OA\Response(response=422, description="Validation error")
      * )
      */
@@ -72,13 +72,11 @@ class OrderController extends Controller
             'status'           => 'required|string',
             'delivery_address' => 'nullable|string',
             'is_home_delivery' => 'nullable|boolean',
+            'product_id'       => 'required|exists:products,id',
         ]);
 
         $user = Auth::user();
-        if (!$user->customer) {
-            return response()->json(['message' => 'No customer record found for the user'], 400);
-        }
-        $validated['customer_id'] = $user->customer->id;
+        $validated['user_id'] = $user->id;
 
         $order = Order::create($validated);
 
