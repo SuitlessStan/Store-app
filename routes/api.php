@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -147,7 +148,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      *      descriptions="API Endpoints for Favorties"
      * )
      */
-    Route::apiResource('favorties', FavortiesController::class);
+    Route::apiResource('favorties', FavoritesController::class);
 
     /**
      * @OA\Tag(
