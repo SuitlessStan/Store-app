@@ -2747,7 +2747,7 @@
                 "description": "Order model schema",
                 "required": [
                     "id",
-                    "customer_id",
+                    "user_id",
                     "status"
                 ],
                 "properties": {
@@ -2755,7 +2755,7 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "customer_id": {
+                    "user_id": {
                         "type": "integer",
                         "example": 1
                     },
