@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *     schema="Order",
  *     title="Order",
  *     description="Order model schema",
- *     required={"id", "customer_id", "status"},
+ *     required={"id", "user_id", "status"},
  *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="customer_id", type="integer", example=1),
+ *     @OA\Property(property="user_id", type="integer", example=1),
  *     @OA\Property(property="status", type="string", example="Pending"),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  *     @OA\Property(property="updated_at", type="string", format="date-time")
@@ -23,11 +23,11 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['customer_id', 'order_date', 'total_amount', 'status', 'delivery_address', 'is_home_delivery'];
+    protected $fillable = ['user_id', 'order_date', 'total_amount', 'status', 'delivery_address', 'is_home_delivery'];
 
-    public function customer()
+    public function user()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(User::class);
     }
 
     public function orderDetails()

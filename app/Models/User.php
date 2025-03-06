@@ -59,7 +59,7 @@ class User extends Authenticatable
 
     public function addresses()
     {
-        return $this->hasMany(address::class);
+        return $this->hasMany(Address::class);
     }
 
     public function isAdmin()
