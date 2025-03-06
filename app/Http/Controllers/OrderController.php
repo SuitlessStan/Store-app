@@ -33,7 +33,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('customer', 'orderDetails')->get();
+        $orders = Order::with('user', 'orderDetails')->get();
         return response()->json($orders, 200);
     }
 
@@ -72,7 +72,7 @@ class OrderController extends Controller
             'status'           => 'required|string',
             'delivery_address' => 'nullable|string',
             'is_home_delivery' => 'nullable|boolean',
-            'product_id'       => 'required|exists:products,id',
+            'cart_id'       => 'required|exists:products,id',
         ]);
 
         $user = Auth::user();
@@ -107,7 +107,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = Order::with('customer', 'orderDetails')->findOrFail($id);
+        $order = Order::with('user', 'orderDetails')->findOrFail($id);
         return response()->json($order, 200);
     }
 
