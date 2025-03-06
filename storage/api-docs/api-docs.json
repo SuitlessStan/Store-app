@@ -1366,8 +1366,8 @@
                 "tags": [
                     "Orders"
                 ],
-                "summary": "Create a new order",
-                "description": "Create a new order using the authenticated user's customer record.",
+                "summary": "Create a new order with product_id",
+                "description": "Create a new order using the authenticated user and a provided product_id.",
                 "operationId": "d690d6834318e9b064df441e854de8b9",
                 "requestBody": {
                     "required": true,
@@ -1377,7 +1377,8 @@
                                 "required": [
                                     "order_date",
                                     "total_amount",
-                                    "status"
+                                    "status",
+                                    "product_id"
                                 ],
                                 "properties": {
                                     "order_date": {
@@ -1401,6 +1402,10 @@
                                     "is_home_delivery": {
                                         "type": "boolean",
                                         "example": true
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
                                     }
                                 },
                                 "type": "object"
@@ -1418,9 +1423,6 @@
                                 }
                             }
                         }
-                    },
-                    "400": {
-                        "description": "Customer record not found for the user"
                     },
                     "422": {
                         "description": "Validation error"
