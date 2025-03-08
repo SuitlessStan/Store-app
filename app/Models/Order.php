@@ -23,19 +23,25 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'order_date', 'total_amount', 'status', 'delivery_address', 'is_home_delivery'];
+    protected $fillable = ['user_id', 'address_id', 'order_date', 'total_amount', 'status', 'delivery_address', 'is_home_delivery'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function orderDetails()
+    public function address()
     {
-        return $this->hasMany(OrderDetail::class,'order_id');
+        return $this->belongsTo(Address::class);
     }
 
-    protected function casts():array {
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'order_id');
+    }
+
+    protected function casts(): array
+    {
         return [
             'order_date' => 'datetime',
         ];

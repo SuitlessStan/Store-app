@@ -33,7 +33,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('user', 'orderDetails')->get();
+        $orders = Order::with('user', 'address', 'orderDetails')->get();
         return response()->json($orders, 200);
     }
 
@@ -67,12 +67,12 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'order_date'       => 'required|date',
-            'total_amount'     => 'required|numeric',
-            'status'           => 'required|string',
+            'order_date' => 'required|date',
+            'total_amount' => 'required|numeric',
+            'status' => 'required|string',
             'delivery_address' => 'nullable|string',
             'is_home_delivery' => 'nullable|boolean',
-            'cart_id'       => 'required|exists:products,id',
+            'cart_id' => 'required|exists:products,id',
         ]);
 
         $user = Auth::user();
@@ -107,7 +107,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = Order::with('user', 'orderDetails')->findOrFail($id);
+        $order = Order::with('user', 'address', 'orderDetails')->findOrFail($id);
         return response()->json($order, 200);
     }
 
@@ -149,9 +149,9 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
 
         $validated = $request->validate([
-            'order_date'       => 'sometimes|date',
-            'total_amount'     => 'sometimes|numeric',
-            'status'           => 'sometimes|string',
+            'order_date' => 'sometimes|date',
+            'total_amount' => 'sometimes|numeric',
+            'status' => 'sometimes|string',
             'delivery_address' => 'nullable|string',
             'is_home_delivery' => 'nullable|boolean',
         ]);
