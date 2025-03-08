@@ -1395,9 +1395,9 @@
                                         "type": "string",
                                         "example": "Pending"
                                     },
-                                    "delivery_address": {
-                                        "type": "string",
-                                        "example": "123 Main St, City, Country"
+                                    "address_id": {
+                                        "type": "integer",
+                                        "example": 1
                                     },
                                     "is_home_delivery": {
                                         "type": "boolean",
