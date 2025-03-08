@@ -144,11 +144,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     /**
      * @OA\Tag(
-     *      name="Favorties"
-     *      descriptions="API Endpoints for Favorties"
+     *      name="Favorites"
+     *      descriptions="API Endpoints for Favorites"
      * )
      */
-    Route::apiResource('favorties', FavoritesController::class);
+    Route::apiResource('favorites', FavoritesController::class);
 
     /**
      * @OA\Tag(
