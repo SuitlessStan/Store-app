@@ -51,7 +51,7 @@ class OrderController extends Controller
      *             @OA\Property(property="order_date", type="string", format="date", example="2025-03-01"),
      *             @OA\Property(property="total_amount", type="number", format="float", example=99.99),
      *             @OA\Property(property="status", type="string", example="Pending"),
-     *             @OA\Property(property="delivery_address", type="string", example="123 Main St, City, Country"),
+     *             @OA\Property(property="address_id", type="integer", example=1),
      *             @OA\Property(property="is_home_delivery", type="boolean", example=true),
      *             @OA\Property(property="cart_id", type="integer", example=1)
      *         )
@@ -70,7 +70,7 @@ class OrderController extends Controller
             'order_date' => 'required|date',
             'total_amount' => 'required|numeric',
             'status' => 'required|string',
-            'delivery_address' => 'nullable|string',
+            'address_id' => 'required|exists:addresses,id',
             'is_home_delivery' => 'nullable|boolean',
             'cart_id' => 'required|exists:products,id',
         ]);
