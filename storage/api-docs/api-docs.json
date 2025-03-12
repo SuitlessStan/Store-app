@@ -1430,6 +1430,38 @@
                 }
             }
         },
+        "/api/user/orders": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get all orders for the authenticated user",
+                "operationId": "681623f2c5c857ab94758cf955cc017a",
+                "responses": {
+                    "200": {
+                        "description": "User orders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Order"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/orders/{id}": {
             "get": {
                 "tags": [
@@ -1562,6 +1594,82 @@
                         "description": "Order not found"
                     }
                 }
+            }
+        },
+        "/api/checkout": {
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Checkout: Place an order and empty the cart",
+                "operationId": "36de50fc119da9c2fd60ff6646a35a84",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "order_date",
+                                    "address_id"
+                                ],
+                                "properties": {
+                                    "order_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-03-01"
+                                    },
+                                    "address_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "delivery_address": {
+                                        "type": "string",
+                                        "example": "123 Main St, City, Country"
+                                    },
+                                    "is_home_delivery": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "payment_method": {
+                                        "description": "0 for cash, 1 for visa",
+                                        "type": "integer",
+                                        "example": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Checkout successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Checkout successful"
+                                        },
+                                        "order": {
+                                            "$ref": "#/components/schemas/Order"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cart is empty"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/orders/{order}/order-details": {

@@ -38,6 +38,30 @@ class OrderController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/user/orders",
+     *     tags={"Orders"},
+     *     summary="Get all orders for the authenticated user",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User orders retrieved successfully",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Order"))
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function userOrders()
+    {
+        $user = Auth::user();
+        $orders = Order::where('user_id', $user->id)
+            ->with(['address', 'orderDetails.product'])
+            ->get();
+
+        return response()->json($orders, 200);
+    }
+
+    /**
      * Create a new order using the authenticated user and a provided product_id.
      *
      * @OA\Post(
@@ -110,6 +134,88 @@ class OrderController extends Controller
         $order = Order::with('user', 'address', 'orderDetails')->findOrFail($id);
         return response()->json($order, 200);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/checkout",
+     *     tags={"Orders"},
+     *     summary="Checkout: Place an order and empty the cart",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"order_date", "address_id"},
+     *             @OA\Property(property="order_date", type="string", format="date", example="2025-03-01"),
+     *             @OA\Property(property="address_id", type="integer", example=1),
+     *             @OA\Property(property="delivery_address", type="string", example="123 Main St, City, Country"),
+     *             @OA\Property(property="is_home_delivery", type="boolean", example=true),
+     *             @OA\Property(property="payment_method", type="integer", example=0, description="0 for cash, 1 for visa")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Checkout successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Checkout successful"),
+     *             @OA\Property(property="order", ref="#/components/schemas/Order")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Cart is empty")
+     * )
+     */
+    public function checkout(Request $request)
+    {
+        $validated = $request->validate([
+            'order_date' => 'required|date',
+            'address_id' => 'required|exists:addresses,id',
+            'delivery_address' => 'nullable|string',
+            'is_home_delivery' => 'nullable|boolean',
+            'payment_method' => 'required|in:0,1'
+        ]);
+
+        $user = Auth::user();
+
+        $cartItems = \App\Models\Cart::where('user_id', $user->id)
+            ->with('product')
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return response()->json(['message' => 'Cart is empty'], 400);
+        }
+
+        $totalAmount = $cartItems->sum(function ($item) {
+            return $item->product->price * $item->quantity;
+        });
+
+        $orderData = array_merge($validated, [
+            'user_id' => $user->id,
+            'total_amount' => $totalAmount,
+            'status' => 'Pending',
+        ]);
+
+        $order = Order::create($orderData);
+
+        foreach ($cartItems as $item) {
+            \App\Models\OrderDetail::create([
+                'order_id' => $order->id,
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                'price' => $item->product->price,
+            ]);
+        }
+
+        // Empty cart
+        \App\Models\Cart::where('user_id', $user->id)->delete();
+
+        // load the order with its related data.
+        $order = Order::with(['user', 'address', 'orderDetails.product'])->find($order->id);
+
+        return response()->json([
+            'message' => 'Checkout successful',
+            'order' => $order,
+        ], 201);
+    }
+
 
     /**
      * Update the specified order.
