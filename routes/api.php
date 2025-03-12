@@ -60,6 +60,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * )
      */
     Route::apiResource('orders', OrderController::class);
+    Route::post('/checkout', [OrderController::class, 'checkout']);
 
     // Order Details
     /**
