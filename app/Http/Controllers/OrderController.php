@@ -20,7 +20,7 @@ class OrderController extends Controller
      *
      * @OA\Get(
      *     path="/api/orders",
-     *     summary="Get list of users orders",
+     *     summary="Get list of user's orders",
      *     tags={"Orders"},
      *     @OA\Response(
      *         response=200,
@@ -117,28 +117,27 @@ class OrderController extends Controller
      * @OA\Post(
      *     path="/api/checkout",
      *     tags={"Orders"},
-     *     summary="Checkout: Place an order and empty the cart",
+     *     summary="Checkout: Create an order from the authenticated user's cart and clear the cart",
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"order_date", "address_id"},
-     *             @OA\Property(property="order_date", type="string", format="date", example="2025-03-01"),
-     *             @OA\Property(property="address_id", type="integer", example=1),
-     *             @OA\Property(property="delivery_address", type="string", example="123 Main St, City, Country"),
-     *             @OA\Property(property="is_home_delivery", type="boolean", example=true),
-     *             @OA\Property(property="payment_method", type="integer", example=0, description="0 for cash, 1 for visa")
+     *             required={"address_id"},
+     *             @OA\Property(
+     *                 property="address_id",
+     *                 type="integer",
+     *                 example=1,
+     *                 description="The ID of the shipping address for the order"
+     *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Checkout successful",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Checkout successful"),
-     *             @OA\Property(property="order", ref="#/components/schemas/Order")
-     *         )
+     *         description="Order created successfully; cart cleared and order details returned",
+     *         @OA\JsonContent(ref="#/components/schemas/Order")
      *     ),
-     *     @OA\Response(response=400, description="Cart is empty")
+     *     @OA\Response(response=400, description="Cart is empty"),
+     *     @OA\Response(response=500, description="Checkout failed")
      * )
      */
     public function checkout(Request $request)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,15 +19,31 @@ class CartController extends Controller
      * @OA\Get(
      *     path="/api/cart",
      *     tags={"Cart"},
-     *     summary="Get the cart items for the authenticated user",
+     *     summary="Get the cart and its items for the authenticated user",
      *     security={{"bearerAuth": {}}},
-     *     @OA\Response(response=200, description="Cart retrieved successfully"),
+     *     @OA\Response(
+     *         response=200, 
+     *         description="Cart retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="id",
+     *                 type="integer",
+     *                 example=1
+     *             ),
+     *             @OA\Property(
+     *                 property="items",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/CartItem")
+     *             )
+     *         )
+     *     ),
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
     public function index()
     {
-        $cart = Cart::where('user_id', Auth::id())->with('product')->get();
+        $cart = Auth::user()->cart()->with('items.product')->first();
         return response()->json($cart, 200);
     }
 
@@ -34,7 +51,7 @@ class CartController extends Controller
      * @OA\Post(
      *     path="/api/cart",
      *     tags={"Cart"},
-     *     summary="Add product to cart",
+     *     summary="Add a product to the cart",
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -53,16 +70,33 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity'   => 'required|integer|min:1',
         ]);
 
-        $cart = Cart::create([
-            'user_id' => Auth::id(),
-            'product_id' => $request->product_id,
-            'quantity' => $request->quantity,
-        ]);
+        $user = Auth::user();
 
-        return response()->json($cart, 201);
+        $cart = $user->cart()->first();
+        if (!$cart) {
+            $cart = Cart::create([
+                'user_id' => $user->id
+            ]);
+        }
+
+        $cartItem = $cart->items()->where('product_id', $request->product_id)->first();
+
+        if ($cartItem) {
+            $cartItem->update([
+                'quantity' => $cartItem->quantity + $request->quantity
+            ]);
+        } else {
+            // Otherwise, create a new cart item
+            $cartItem = $cart->items()->create([
+                'product_id' => $request->product_id,
+                'quantity'   => $request->quantity,
+            ]);
+        }
+
+        return response()->json($cartItem, 201);
     }
 
     /**
@@ -95,19 +129,25 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart = Cart::where('user_id', Auth::id())->findOrFail($id);
-        $cart->update([
+        $user = Auth::user();
+        $cart = $user->cart()->first();
+        if (!$cart) {
+            return response()->json(['message' => 'Cart not found'], 404);
+        }
+
+        $cartItem = $cart->items()->findOrFail($id);
+        $cartItem->update([
             'quantity' => $request->quantity
         ]);
 
-        return response()->json($cart, 200);
+        return response()->json($cartItem, 200);
     }
 
     /**
      * @OA\Delete(
      *     path="/api/cart/{id}",
      *     tags={"Cart"},
-     *     summary="Remove product from cart",
+     *     summary="Remove a product from the cart",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
@@ -122,8 +162,14 @@ class CartController extends Controller
      */
     public function destroy($id)
     {
-        $cart = Cart::where('user_id', Auth::id())->findOrFail($id);
-        $cart->delete();
+        $user = Auth::user();
+        $cart = $user->cart()->first();
+        if (!$cart) {
+            return response()->json(['message' => 'Cart not found'], 404);
+        }
+
+        $cartItem = $cart->items()->findOrFail($id);
+        $cartItem->delete();
 
         return response()->json(['message' => 'Cart item removed successfully'], 200);
     }
