@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @OA\Tag(
@@ -19,7 +20,7 @@ class OrderController extends Controller
      *
      * @OA\Get(
      *     path="/api/orders",
-     *     summary="Get list of orders",
+     *     summary="Get list of users orders",
      *     tags={"Orders"},
      *     @OA\Response(
      *         response=200,
@@ -33,32 +34,9 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('user', 'address', 'orderDetails')->get();
-        return response()->json($orders, 200);
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/api/user/orders",
-     *     tags={"Orders"},
-     *     summary="Get all orders for the authenticated user",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="User orders retrieved successfully",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Order"))
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
-     */
-    public function userOrders()
-    {
-        $user = Auth::user();
-        $orders = Order::where('user_id', $user->id)
-            ->with(['address', 'orderDetails.product'])
-            ->get();
-
-        return response()->json($orders, 200);
+        $user = auth()->user();
+        $orders = $user->orders()->with('orderDetails')->get();
+        return response()->json($orders);
     }
 
     /**
@@ -165,57 +143,50 @@ class OrderController extends Controller
      */
     public function checkout(Request $request)
     {
-        $validated = $request->validate([
-            'order_date' => 'required|date',
-            'address_id' => 'required|exists:addresses,id',
-            'delivery_address' => 'nullable|string',
-            'is_home_delivery' => 'nullable|boolean',
-            'payment_method' => 'required|in:0,1'
-        ]);
+        $user = auth()->user();
 
-        $user = Auth::user();
+        $cart = $user->cart()->with('items.product')->first();
 
-        $cartItems = \App\Models\Cart::where('user_id', $user->id)
-            ->with('product')
-            ->get();
-
-        if ($cartItems->isEmpty()) {
-            return response()->json(['message' => 'Cart is empty'], 400);
+        if (!$cart || $cart->items->isEmpty()) {
+            return response()->json(['message' => 'Your cart is empty.'], 400);
         }
 
-        $totalAmount = $cartItems->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
+        $totalAmount = 0;
+        foreach ($cart->items as $item) {
+            $totalAmount += $item->quantity * $item->product->price;
+        }
 
-        $orderData = array_merge($validated, [
-            'user_id' => $user->id,
-            'total_amount' => $totalAmount,
-            'status' => 'Pending',
-        ]);
+        $addressId = $request->input('address_id');
 
-        $order = Order::create($orderData);
-
-        foreach ($cartItems as $item) {
-            \App\Models\OrderDetail::create([
-                'order_id' => $order->id,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'price' => $item->product->price,
+        DB::beginTransaction();
+        try {
+            $order = $user->orders()->create([
+                'address_id' => $addressId,
+                'total_amount' => $totalAmount,
+                'status' => 'pending',
             ]);
+
+            foreach ($cart->items as $item) {
+                $order->orderDetails()->create([
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price,
+                ]);
+            }
+
+            $cart->items()->delete();
+
+            DB::commit();
+
+            return response()->json($order->load('orderDetails'), 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Checkout failed.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // Empty cart
-        \App\Models\Cart::where('user_id', $user->id)->delete();
-
-        // load the order with its related data.
-        $order = Order::with(['user', 'address', 'orderDetails.product'])->find($order->id);
-
-        return response()->json([
-            'message' => 'Checkout successful',
-            'order' => $order,
-        ], 201);
     }
-
 
     /**
      * Update the specified order.

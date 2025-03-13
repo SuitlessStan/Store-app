@@ -1343,7 +1343,7 @@
                 "tags": [
                     "Orders"
                 ],
-                "summary": "Get list of orders",
+                "summary": "Get list of users orders",
                 "description": "Display a listing of orders.",
                 "operationId": "2cd7e03021e72d9d799c12dfe179c865",
                 "responses": {
@@ -1428,38 +1428,6 @@
                         "description": "Validation error"
                     }
                 }
-            }
-        },
-        "/api/user/orders": {
-            "get": {
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Get all orders for the authenticated user",
-                "operationId": "681623f2c5c857ab94758cf955cc017a",
-                "responses": {
-                    "200": {
-                        "description": "User orders retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Order"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
             }
         },
         "/api/orders/{id}": {

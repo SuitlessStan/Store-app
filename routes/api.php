@@ -115,6 +115,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * )
      */
     Route::apiResource('categories', CategoryController::class);
+    Route::get('categories/{id}', [CategoryController::class, 'showProducts']);
 
 
     // Users
