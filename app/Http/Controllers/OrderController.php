@@ -209,7 +209,7 @@ class OrderController extends Controller
 
             DB::commit();
 
-            return response()->json($order->load('orderDetails'), 201);
+            return response()->json($order->load('orderDetails.product'), 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
