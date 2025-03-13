@@ -669,11 +669,30 @@
                 "tags": [
                     "Cart"
                 ],
-                "summary": "Get the cart items for the authenticated user",
+                "summary": "Get the cart and its items for the authenticated user",
                 "operationId": "0652f94dde92e36bbb3c461356ce1d7b",
                 "responses": {
                     "200": {
-                        "description": "Cart retrieved successfully"
+                        "description": "Cart retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CartItem"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -689,7 +708,7 @@
                 "tags": [
                     "Cart"
                 ],
-                "summary": "Add product to cart",
+                "summary": "Add a product to the cart",
                 "operationId": "b432c7bbb8b06ea2019c3d37f23258ca",
                 "requestBody": {
                     "required": true,
@@ -790,7 +809,7 @@
                 "tags": [
                     "Cart"
                 ],
-                "summary": "Remove product from cart",
+                "summary": "Remove a product from the cart",
                 "operationId": "5fc80ceb0ebae6f9fed7fc27e0f93592",
                 "parameters": [
                     {
@@ -1343,7 +1362,7 @@
                 "tags": [
                     "Orders"
                 ],
-                "summary": "Get list of users orders",
+                "summary": "Get list of user's orders",
                 "description": "Display a listing of orders.",
                 "operationId": "2cd7e03021e72d9d799c12dfe179c865",
                 "responses": {
@@ -1569,7 +1588,7 @@
                 "tags": [
                     "Orders"
                 ],
-                "summary": "Checkout: Place an order and empty the cart",
+                "summary": "Checkout: Create an order from the authenticated user's cart and clear the cart",
                 "operationId": "36de50fc119da9c2fd60ff6646a35a84",
                 "requestBody": {
                     "required": true,
@@ -1577,31 +1596,13 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "order_date",
                                     "address_id"
                                 ],
                                 "properties": {
-                                    "order_date": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2025-03-01"
-                                    },
                                     "address_id": {
+                                        "description": "The ID of the shipping address for the order",
                                         "type": "integer",
                                         "example": 1
-                                    },
-                                    "delivery_address": {
-                                        "type": "string",
-                                        "example": "123 Main St, City, Country"
-                                    },
-                                    "is_home_delivery": {
-                                        "type": "boolean",
-                                        "example": true
-                                    },
-                                    "payment_method": {
-                                        "description": "0 for cash, 1 for visa",
-                                        "type": "integer",
-                                        "example": 0
                                     }
                                 },
                                 "type": "object"
@@ -1611,26 +1612,20 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Checkout successful",
+                        "description": "Order created successfully; cart cleared and order details returned",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Checkout successful"
-                                        },
-                                        "order": {
-                                            "$ref": "#/components/schemas/Order"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/Order"
                                 }
                             }
                         }
                     },
                     "400": {
                         "description": "Cart is empty"
+                    },
+                    "500": {
+                        "description": "Checkout failed"
                     }
                 },
                 "security": [
@@ -2742,6 +2737,48 @@
                         "type": "string",
                         "format": "date-time",
                         "example": "2025-01-01T12:30:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "CartItem": {
+                "title": "CartItem",
+                "description": "Represents a single item in a user's shopping cart",
+                "required": [
+                    "cart_id",
+                    "product_id",
+                    "quantity"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Unique identifier for the cart item",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cart_id": {
+                        "description": "Identifier of the cart this item belongs to",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "description": "Identifier of the product associated with this cart item",
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "quantity": {
+                        "description": "Number of units of the product in the cart",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "created_at": {
+                        "description": "Timestamp when the cart item was created",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Timestamp when the cart item was last updated",
+                        "type": "string",
+                        "format": "date-time"
                     }
                 },
                 "type": "object"
