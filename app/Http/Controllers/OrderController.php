@@ -117,17 +117,37 @@ class OrderController extends Controller
      * @OA\Post(
      *     path="/api/checkout",
      *     tags={"Orders"},
-     *     summary="Checkout: Create an order from the authenticated user's cart and clear the cart",
+     *     summary="Checkout: Create an order from the authenticated user's cart, process payment and delivery options, and clear the cart",
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"address_id"},
+     *             required={"address_id", "payment_method", "is_home_delivery"},
      *             @OA\Property(
      *                 property="address_id",
      *                 type="integer",
      *                 example=1,
      *                 description="The ID of the shipping address for the order"
+     *             ),
+     *             @OA\Property(
+     *                 property="payment_method",
+     *                 type="integer",
+     *                 enum={0, 1},
+     *                 example=0,
+     *                 description="Payment method: 0 for cash, 1 for visa"
+     *             ),
+     *             @OA\Property(
+     *                 property="is_home_delivery",
+     *                 type="boolean",
+     *                 example=true,
+     *                 description="True if the order is to be delivered; false for in-person pickup"
+     *             ),
+     *             @OA\Property(
+     *                 property="delivery_price",
+     *                 type="number",
+     *                 format="float",
+     *                 example=10.00,
+     *                 description="Delivery price; required if is_home_delivery is true, 0 otherwise"
      *             )
      *         )
      *     ),
@@ -150,19 +170,31 @@ class OrderController extends Controller
             return response()->json(['message' => 'Your cart is empty.'], 400);
         }
 
+        $validated = $request->validate([
+            'address_id' => 'required|exists:addresses,id',
+            'payment_method' => 'required|in:0,1', // 0 for cash, 1 for visa
+            'is_home_delivery' => 'required|boolean',
+            'delivery_price' => 'required_if:is_home_delivery,1|numeric|min:0'
+        ]);
+
         $totalAmount = 0;
         foreach ($cart->items as $item) {
             $totalAmount += $item->quantity * $item->product->price;
         }
 
-        $addressId = $request->input('address_id');
+        $isHomeDelivery = $validated['is_home_delivery'];
+        $deliveryPrice = $isHomeDelivery ? $validated['delivery_price'] : 0;
+        $totalAmount += $deliveryPrice;
 
         DB::beginTransaction();
         try {
             $order = $user->orders()->create([
-                'address_id' => $addressId,
+                'address_id' => $validated['address_id'],
                 'total_amount' => $totalAmount,
                 'status' => 'pending',
+                'payment_method' => $validated['payment_method'],
+                'is_home_delivery' => $isHomeDelivery,
+                'delivery_price' => $deliveryPrice,
             ]);
 
             foreach ($cart->items as $item) {
