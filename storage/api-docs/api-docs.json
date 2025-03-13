@@ -1588,7 +1588,7 @@
                 "tags": [
                     "Orders"
                 ],
-                "summary": "Checkout: Create an order from the authenticated user's cart and clear the cart",
+                "summary": "Checkout: Create an order from the authenticated user's cart, process payment and delivery options, and clear the cart",
                 "operationId": "36de50fc119da9c2fd60ff6646a35a84",
                 "requestBody": {
                     "required": true,
@@ -1596,13 +1596,35 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "address_id"
+                                    "address_id",
+                                    "payment_method",
+                                    "is_home_delivery"
                                 ],
                                 "properties": {
                                     "address_id": {
                                         "description": "The ID of the shipping address for the order",
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "payment_method": {
+                                        "description": "Payment method: 0 for cash, 1 for visa",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ],
+                                        "example": 0
+                                    },
+                                    "is_home_delivery": {
+                                        "description": "True if the order is to be delivered; false for in-person pickup",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "delivery_price": {
+                                        "description": "Delivery price; required if is_home_delivery is true, 0 otherwise",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10
                                     }
                                 },
                                 "type": "object"
