@@ -1032,13 +1032,13 @@
                 }
             }
         },
-        "/categories/{category}": {
+        "/api/categories/{category}/products": {
             "get": {
                 "tags": [
                     "Categories"
                 ],
                 "summary": "Get all products for a specific category",
-                "operationId": "32fd5e4b078e5e58753fe711ba2511cf",
+                "operationId": "fdc0f44eec6e9b951bbc903b5b8b7bb2",
                 "parameters": [
                     {
                         "name": "category",
