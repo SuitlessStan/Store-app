@@ -2112,6 +2112,55 @@
                 }
             }
         },
+        "/api/products/discounted": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get all discounted products with discount amounts and final prices",
+                "operationId": "871cabf38b33406b592c35ed7dbfb43b",
+                "responses": {
+                    "200": {
+                        "description": "Discounted products retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Sample Product"
+                                            },
+                                            "price": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 99.99
+                                            },
+                                            "discount": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 10
+                                            },
+                                            "price_after_discount": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 89.99
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/product-suppliers/create": {
             "get": {
                 "summary": "Show the form for creating a new product supplier",
