@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\CartResource;
 
 /**
  * @OA\Tag(
@@ -44,9 +45,8 @@ class CartController extends Controller
     public function index()
     {
         $cart = Auth::user()->cart()->with('items.product')->first();
-        return response()->json($cart, 200);
+        return response()->json(new CartResource($cart), 200);
     }
-
     /**
      * @OA\Post(
      *     path="/api/cart",
@@ -75,7 +75,6 @@ class CartController extends Controller
 
         $user = Auth::user();
 
-        //TODO: Remove this later in the future
         $cart = $user->cart()->firstOrCreate([]);
 
         $cartItem = $cart->items()->where('product_id', $request->product_id)->first();
