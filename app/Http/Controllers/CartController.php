@@ -76,10 +76,7 @@ class CartController extends Controller
         $user = Auth::user();
 
         //TODO: Remove this later in the future
-        $cart = $user->cart()->firstOrCreate([
-            'product_id' => 0,
-            'quantity' => 0,  
-        ]);
+        $cart = $user->cart()->firstOrCreate([]);
 
         $cartItem = $cart->items()->where('product_id', $request->product_id)->first();
 
