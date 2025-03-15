@@ -79,6 +79,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * )
      */
     Route::apiResource('products', ProductController::class);
+    Route::get('/products/discounted', [ProductController::class, 'discountedProducts']);
 
     // Product Suppliers
     /**

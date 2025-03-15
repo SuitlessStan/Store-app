@@ -77,7 +77,7 @@ class ProductController extends Controller
             'stock_quantity' => 'required|integer',
             'price' => 'required|numeric',
             'discount' => 'nullable|numeric',
-            'product_image'  => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048'
+            'product_image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048'
         ]);
 
         if ($request->hasFile('product_image')) {
@@ -176,7 +176,7 @@ class ProductController extends Controller
             'category_id' => 'sometimes|exists:categories,id',
             'brand' => 'nullable|string|max:255',
             'stock_quantity' => 'sometimes|integer',
-            'product_image'  => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048'
+            'product_image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048'
         ]);
 
         if ($request->hasFile('product_image')) {
@@ -231,5 +231,34 @@ class ProductController extends Controller
         }
 
         return response()->json(['message' => 'Product deleted successfully'], 200);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/products/discounted",
+     *     tags={"Products"},
+     *     summary="Get all discounted products with discount amounts and final prices",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Discounted products retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Sample Product"),
+     *                 @OA\Property(property="price", type="number", format="float", example=99.99),
+     *                 @OA\Property(property="discount", type="number", format="float", example=10),
+     *                 @OA\Property(property="price_after_discount", type="number", format="float", example=89.99)
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function discountedProducts()
+    {
+        $discountedProducts = Product::where('discount', '>', 0)->get();
+
+        return response()->json($discountedProducts, 200);
     }
 }
