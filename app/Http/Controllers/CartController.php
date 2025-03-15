@@ -70,17 +70,12 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity'   => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1',
         ]);
 
         $user = Auth::user();
 
-        $cart = $user->cart()->first();
-        if (!$cart) {
-            $cart = Cart::create([
-                'user_id' => $user->id
-            ]);
-        }
+        $cart = $user->cart()->firstOrCreate([]);
 
         $cartItem = $cart->items()->where('product_id', $request->product_id)->first();
 
@@ -89,10 +84,9 @@ class CartController extends Controller
                 'quantity' => $cartItem->quantity + $request->quantity
             ]);
         } else {
-            // Otherwise, create a new cart item
             $cartItem = $cart->items()->create([
                 'product_id' => $request->product_id,
-                'quantity'   => $request->quantity,
+                'quantity' => $request->quantity,
             ]);
         }
 

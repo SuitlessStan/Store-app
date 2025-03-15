@@ -1385,8 +1385,8 @@
                 "tags": [
                     "Orders"
                 ],
-                "summary": "Create a new order with product_id",
-                "description": "Create a new order using the authenticated user and a provided product_id.",
+                "summary": "Create a new order with cart_id",
+                "description": "Create a new order using the authenticated user and a provided cart_id.",
                 "operationId": "d690d6834318e9b064df441e854de8b9",
                 "requestBody": {
                     "required": true,
@@ -1397,7 +1397,7 @@
                                     "order_date",
                                     "total_amount",
                                     "status",
-                                    "product_id"
+                                    "cart_id"
                                 ],
                                 "properties": {
                                     "order_date": {
@@ -1589,6 +1589,7 @@
                     "Orders"
                 ],
                 "summary": "Checkout: Create an order from the authenticated user's cart, process payment and delivery options, and clear the cart",
+                "description": "Checkout: Create an order from the authenticated user's cart, process payment and delivery options, and clear the cart.",
                 "operationId": "36de50fc119da9c2fd60ff6646a35a84",
                 "requestBody": {
                     "required": true,
