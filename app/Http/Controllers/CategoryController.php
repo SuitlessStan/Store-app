@@ -100,7 +100,7 @@ class CategoryController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/categories/{category}",
+     *     path="/api/categories/{category}/products",
      *     summary="Get all products for a specific category",
      *     tags={"Categories"},
      *     @OA\Parameter(
@@ -137,9 +137,9 @@ class CategoryController extends Controller
     public function webStore(Request $request)
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:255|unique:categories,name',
+            'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048'
+            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048'
         ]);
 
         if ($request->hasFile('image')) {
