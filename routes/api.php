@@ -43,15 +43,6 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke
 Route::post('/email/resend', [EmailVerificationNotificationController::class, 'store'])->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    // Customers
-    /**
-     * @OA\Tag(
-     *     name="Customers",
-     *     description="API Endpoints for Customers"
-     * )
-     */
-    Route::apiResource('customers', CustomerController::class);
-
     // Orders
     /**
      * @OA\Tag(
@@ -78,9 +69,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
      *     description="API Endpoints for Products"
      * )
      */
-    Route::apiResource('products', ProductController::class);
     Route::get('/products/discounted', [ProductController::class, 'discountedProducts']);
     Route::get('/products/discounted-collection', [ProductController::class, 'discountedProductsByFilteringCollection']);
+    Route::apiResource('products', ProductController::class);
 
     // Product Suppliers
     /**
@@ -100,15 +91,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::apiResource('profiles', ProfileController::class);
 
-    // Suppliers
-    /**
-     * @OA\Tag(
-     *     name="Suppliers",
-     *     description="API Endpoints for Suppliers"
-     * )
-     */
-    Route::apiResource('suppliers', SupplierController::class);
-
     // Categories
     /**
      * @OA\Tag(
@@ -118,7 +100,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::apiResource('categories', CategoryController::class);
     Route::get('categories/{id}/products', [CategoryController::class, 'showProducts']);
-
 
     // Users
     /**
