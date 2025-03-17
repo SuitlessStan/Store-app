@@ -80,6 +80,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::apiResource('products', ProductController::class);
     Route::get('/products/discounted', [ProductController::class, 'discountedProducts']);
+    Route::get('/products/discounted-collection', [ProductController::class, 'discountedProductsByFilteringCollection']);
 
     // Product Suppliers
     /**

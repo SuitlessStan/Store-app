@@ -257,8 +257,18 @@ class ProductController extends Controller
      */
     public function discountedProducts()
     {
-        $discountedProducts = Product::where('discount', '>', 0)->get();
+        $discountedProducts = Product::discounted()->get();
 
         return response()->json($discountedProducts, 200);
+    }
+
+    public function discountedProductsByFilteringCollection()
+    {
+        $allProducts = Product::all();
+        $discountedProducts = $allProducts->filter(function ($product) {
+            return $product->discount > 0;
+        });
+
+        return response()->json($discountedProducts->values(), 200);
     }
 }

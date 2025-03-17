@@ -55,4 +55,8 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function scopeDiscounted($query)
+    {
+        return $query->where('discount', '>', 0);
+    }
 }
