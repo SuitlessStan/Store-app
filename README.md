@@ -165,6 +165,6 @@ php artisan test
 - **Favorites and Cart:** Database tables link to products for seamless management.
 
 ---
-
+   
 ## License
 This project is open-source and available under the [MIT License](LICENSE).
